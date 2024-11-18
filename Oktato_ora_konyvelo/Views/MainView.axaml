@@ -1,0 +1,347 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Oktato_ora_konyvelo.ViewModels"
+             xmlns:converters="clr-namespace:Oktato_ora_konyvelo.Converters"
+             mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
+             x:Class="Oktato_ora_konyvelo.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <vm:MainViewModel/>
+  </Design.DataContext>
+  <UserControl.Styles>
+    <Style Selector="Grid > TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="0"/>
+    </Style>
+    <Style Selector="#LessonTitleBar > TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="0"/>
+    </Style>
+    <Style Selector="#LessonDisplay ListBoxItem">
+      <Setter Property="IsHitTestVisible" Value="False" />
+      <Setter Property="Focusable" Value="False" />
+    </Style>
+  </UserControl.Styles>
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <converters:KVARStatusDisplayConverter x:Key="KVARConverter"/>
+    </ResourceDictionary>
+  </UserControl.Resources>
+  <TabControl TabStripPlacement="Top"
+              SelectedIndex="2"><!--Ez az érték debugolásra van.-->
+    <TabItem Header="Összes óra">
+      <DockPanel Margin="0">
+        <Grid x:Name="LessonTitleBar"
+              DockPanel.Dock="Top"
+              ShowGridLines="True">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="0.55*"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition Width="0.6*"/>
+            <ColumnDefinition Width="0.6*"/>
+            <ColumnDefinition Width="0.6*"/>
+            <ColumnDefinition Width="0.35*"/>
+            <ColumnDefinition Width="0.4*"/>
+            <ColumnDefinition Width="0.5*"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="Dátum"
+                     Grid.Column="0"/>
+          <TextBlock Text="Kezdet - befejezés"
+                     Grid.Column="1"/>
+          <TextBlock Text="Tanuló"
+                     Grid.Column="2"/>
+          <TextBlock Text="Óra jellege"
+                     Grid.Column="3"/>
+          <TextBlock Text="Indulás"
+                     Grid.Column="4"/>
+          <TextBlock Text="Érkezés"
+                     Grid.Column="5"/>
+          <TextBlock Text="Km óra tól-ig"
+                     Grid.Column="6"/>
+          <TextBlock Text="Vezetett km"
+                     Grid.Column="7"/>
+          <TextBlock Text="Vezetett perc"
+                     Grid.Column="8"/>
+          <TextBlock Text="KVAR állapot"
+                     Grid.Column="9"/>
+        </Grid>
+        <ListBox x:Name="AllLessons"
+                 ItemsSource="{Binding AllLessons}"
+                 DockPanel.Dock="Bottom"
+                 ItemTemplate="{StaticResource OneLesson}">
+          <ListBox.Styles>
+            <Style Selector="TextBlock.fg_red">
+              <Setter Property="Foreground" Value="Red"/>
+            </Style>
+            <Style Selector="TextBlock.fg_green">
+              <Setter Property="Foreground" Value="Green"/>
+            </Style>
+          </ListBox.Styles>
+        </ListBox>
+      </DockPanel>
+    </TabItem>
+    <TabItem Header="Tanulók">
+      <DockPanel>
+        <Grid DockPanel.Dock="Top"
+              Margin="29 0 73 0"
+              ShowGridLines="True">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="Név"
+                   Grid.Column="0"/>
+          <TextBlock Text="Órák száma"
+                   Grid.Column="1"/>
+          <TextBlock Text="Összperc"
+                   Grid.Column="2"/>
+          <TextBlock Text="Összkm"
+                   Grid.Column="3"/>
+          <TextBlock Text="A óraszám"
+                     Grid.Column="4"/>
+          <TextBlock Text="F/v óraszám"
+                     Grid.Column="5"/>
+          <TextBlock Text="F/o óraszám"
+                     Grid.Column="6"/>
+          <TextBlock Text="F/é óraszám"
+                     Grid.Column="7"/>
+          <TextBlock Text="Felviteli állapot"
+                     Grid.Column="8"/>
+        </Grid>
+        <ListBox ItemsSource="{Binding AllStudents}"
+                 DockPanel.Dock="Bottom">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Expander HorizontalAlignment="Stretch">
+                <Expander.Header>
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding DisplayName}"
+                               Grid.Column="0"/>
+                    <TextBlock Text="{Binding AllLessonCount}"
+                               Grid.Column="1"/>
+                    <TextBlock Text="{Binding DrivenTime.TotalMinutes}"
+                               Grid.Column="2"/>
+                    <TextBlock Text="{Binding DrivenDistance}"
+                               Grid.Column="3"/>
+                    <TextBlock Text="{Binding ALessonCount}"
+                               Grid.Column="4"/>
+                    <TextBlock Text="{Binding FvLessonCount}"
+                               Grid.Column="5"/>
+                    <TextBlock Text="{Binding FoLessonCount}"
+                               Grid.Column="6"/>
+                    <TextBlock Text="{Binding FeLessonCount}"
+                               Grid.Column="7"/>
+                    <TextBlock Text="{Binding KVARStatus}"
+                               Grid.Column="8"/>
+                  </Grid>
+                </Expander.Header>
+                <Expander.Styles>
+                  <Style Selector="TextBlock.fg_red">
+                    <Setter Property="Foreground" Value="Red"/>
+                  </Style>
+                  <Style Selector="TextBlock.fg_green">
+                    <Setter Property="Foreground" Value="Green"/>
+                  </Style>
+                </Expander.Styles>
+                <DockPanel>
+                  <Grid x:Name="LessonTitleBar"
+                        DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                      <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Dátum"
+                               Grid.Column="0"/>
+                    <TextBlock Text="Kezdet - befejezés"
+                               Grid.Column="1"/>
+                    <TextBlock Text="Percek száma"
+                               Grid.Column="2"/>
+                    <TextBlock Text="Óra jellege"
+                               Grid.Column="3"/>
+                    <TextBlock Text="Indulás"
+                               Grid.Column="4"/>
+                    <TextBlock Text="Érkezés"
+                               Grid.Column="5"/>
+                    <TextBlock Text="Km óra tól-ig"
+                               Grid.Column="6"/>
+                    <TextBlock Text="Vezetett km"
+                               Grid.Column="7"/>
+                    <TextBlock Text="Összperc"
+                               Grid.Column="8"/>
+                    <TextBlock Text="Összkm"
+                               Grid.Column="9"/>
+                    <TextBlock Text="Rögzítve?"
+                               Grid.Column="10"/>
+                  </Grid>
+                  <ListBox ItemsSource="{Binding StudentLessons}"
+                           DockPanel.Dock="Bottom">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <Grid x:Name="OneLesson"
+                              Margin="-11 0 -11 0"
+                              ShowGridLines="True">
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                          </Grid.ColumnDefinitions>
+                          <TextBlock x:Name="LessonDate"
+                                     Text="{Binding Date}"
+                                     Grid.Column="0"/>
+                          <TextBlock Grid.Column="1">
+                            <Run Text="{Binding StartTime}"/>
+                            <Run Text=" - "/>
+                            <Run Text="{Binding EndTime}"/>
+                          </TextBlock>
+                          <TextBlock Text="{Binding DrivenMinutes}"
+                                     Grid.Column="2"/>
+                          <TextBlock Text="{Binding LessonType}"
+                                     Grid.Column="3"/>
+                          <TextBlock Text="{Binding StartPlace}"
+                                     Grid.Column="4"/>
+                          <TextBlock Text="{Binding EndPlace}"
+                                     Grid.Column="5"/>
+                          <TextBlock Grid.Column="6">
+                            <Run Text="{Binding MeterAtStart}"/>
+                            <Run Text=" - "/>
+                            <Run Text="{Binding MeterAtEnd}"/>
+                          </TextBlock>
+                          <TextBlock Text="{Binding DrivenKm}"
+                                     Grid.Column="7"/>
+                          <TextBlock Text="{Binding AllKm}"
+                                     Grid.Column="8"/>
+                          <TextBlock Text="{Binding AllDrivenMinutes}"
+                                     Grid.Column="9"/>
+                          <TextBlock Text="{Binding IsRecordedInKVAR,
+                                            Converter={StaticResource KVARConverter}}"
+                                     Grid.Column="10"
+                                     Classes.fg_red="{Binding !IsRecordedInKVAR}"
+                                     Classes.fg_green="{Binding IsRecordedInKVAR}"/>
+                        </Grid>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </DockPanel>
+              </Expander>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </TabItem>
+    <TabItem Header="Óra felvétele">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="0.25*"/>
+          <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel x:Name="DockStudentSelectArea"
+                   Grid.Row="0"
+                   Grid.Column="0">
+          <Label Content="Tanuló"
+                 DockPanel.Dock="Top"
+                 HorizontalAlignment="Center"/>
+          <ComboBox ItemsSource="{Binding AllStudents}"
+                    DockPanel.Dock="Bottom"
+                    HorizontalAlignment="Stretch"
+                    SelectedItem="{Binding TempLesson.CurrentStudent}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <Label Content="{Binding DisplayName}"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </DockPanel>
+        <DockPanel x:Name="DockSetKmArea"
+                   Grid.Row="1"
+                   Grid.Column="0">
+          <Label Content="Vezett kilóméter"
+                 DockPanel.Dock="Top"
+                 HorizontalAlignment="Center"/>
+          <NumericUpDown x:Name="NumupdownAddLesson"
+                         Value="{Binding TempLesson.DrivenKm, Mode=TwoWay}"
+                         FormatString="00"
+                         DockPanel.Dock="Top"
+                         HorizontalAlignment="Stretch"
+                         HorizontalContentAlignment="Center"/>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition/>
+              <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Content="Kilóméteróra"
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"/>
+            <Label Content="Tól"
+                   Grid.Row="1"
+                   Grid.Column="0"
+                   HorizontalAlignment="Center"/>
+            <Label Content="ig"
+                   Grid.Row="1"
+                   Grid.Column="1"
+                   HorizontalAlignment="Center"/>
+            <Label Content="{Binding TempLesson.MeterAtStart}"
+                   Grid.Row="2"
+                   Grid.Column="0"
+                   HorizontalAlignment="Center"/>
+            <Label Content="{Binding TempLesson.MeterAtEnd}"
+                   Grid.Row="2"
+                   Grid.Column="1"
+                   HorizontalAlignment="Center"/>
+          </Grid>
+        </DockPanel>
+      </Grid>
+    </TabItem>
+  </TabControl>
+</UserControl>
