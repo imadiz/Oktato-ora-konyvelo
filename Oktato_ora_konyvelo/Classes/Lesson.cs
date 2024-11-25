@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,34 +11,20 @@ namespace Oktato_ora_konyvelo.Classes
 {
     public partial class Lesson : ObservableObject
     {
-        [ObservableProperty]
-        private DateOnly date;
-        [ObservableProperty]
-        private TimeOnly startTime;
-        [ObservableProperty]
-        private TimeOnly endTime;
-        [ObservableProperty]
-        private int drivenMinutes;
-        [ObservableProperty]
-        private int allDrivenMinutes;
-        [ObservableProperty]
-        private Student student;
-        [ObservableProperty]
-        private string lessonType;
-        [ObservableProperty]
-        private string startPlace;
-        [ObservableProperty]
-        private string endPlace;
-        [ObservableProperty]
-        private int meterAtStart;
-        [ObservableProperty]
-        private int meterAtEnd;
-        [ObservableProperty]
-        private int drivenKm;
-        [ObservableProperty]
-        private int allKm;
-        [ObservableProperty]
-        private bool isRecordedInKVAR;
+        [ObservableProperty] private DateOnly date;
+        [ObservableProperty] private TimeOnly startTime;
+        [ObservableProperty] private TimeOnly endTime;
+        [ObservableProperty] private int drivenMinutes;
+        [ObservableProperty] private int allDrivenMinutes;
+        [ObservableProperty] private Student student;
+        [ObservableProperty] private string lessonType;
+        [ObservableProperty] private string startPlace;
+        [ObservableProperty] private string endPlace;
+        [ObservableProperty] private int meterAtStart;
+        [ObservableProperty] private int meterAtEnd;
+        [ObservableProperty] private int drivenKm;
+        [ObservableProperty] private int allKm;
+        [ObservableProperty] private bool isRecordedInKVAR;
 
         private ObservableCollection<Lesson> PreviousLessons = [];
         private ObservableCollection<Lesson> AllLessons;

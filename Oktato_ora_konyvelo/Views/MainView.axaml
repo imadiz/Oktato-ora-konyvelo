@@ -20,11 +20,20 @@
       <Style Selector="#StudentTitleBar > TextBlock">
           <Setter Property="TextAlignment" Value="Center"/>
       </Style>
-      <Style Selector="#LessonTitleBar > Label">
-          <Setter Property="Margin" Value="10 0 10 0"></Setter>
+      <Style Selector="#LessonTitleBar Label">
+          <Setter Property="Margin" Value="10 0 10 0"/>
       </Style>
-      <Style Selector="#AllLessons > Label">
-          <Setter Property="Margin" Value="10 0 10 0"></Setter>
+      <Style Selector="#AllLessons Label">
+          <Setter Property="Margin" Value="10 0 10 0"/>
+      </Style>
+      <Style Selector="#LessonTitleBar Label:nth-child(1)"><!--Első Label marginjának eltávolítása-->
+          <Setter Property="Margin" Value="0"/>
+      </Style>
+      <Style Selector="#LessonTitleBar Label:nth-last-child(1)"><!--Utolsó Label marginjának eltávolítása-->
+          <Setter Property="Margin" Value="0"/>
+      </Style>
+      <Style Selector="#AllLessons ContentPresenter:nth-child(odd)"><!--Összes óra listában minden második elem szürke háttérszín állítás-->
+          <Setter Property="Background" Value="#EEE"/>
       </Style>
   </UserControl.Styles>
   <UserControl.Resources>

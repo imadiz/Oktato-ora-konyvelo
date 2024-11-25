@@ -68,6 +68,8 @@ namespace Oktato_ora_konyvelo.ViewModels
 
         public MainViewModel()
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("hu-HU");//Magyar Dátum és idő formátumokra váltás
+            
             TempLesson = new ToBeAddedLesson(AllLessons);
 
             AllStudents.Add(new Student("Teszt Elek (12345678)", AllLessons));
