@@ -42,7 +42,8 @@
     </ResourceDictionary>
   </UserControl.Resources>
   <TabControl TabStripPlacement="Top"
-              SelectedIndex="0"><!--Ez az érték debugolásra van.-->
+              SelectedIndex="2"
+              Padding="0"><!--Ez az érték debugolásra van.-->
     <TabItem Header="Összes óra">
       <DockPanel Grid.IsSharedSizeScope="True">
         <Grid x:Name="LessonTitleBar"
@@ -338,69 +339,209 @@
       </DockPanel>
     </TabItem>
     <TabItem Header="Óra felvétele">
-      <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="0.25*,1*">
-          <DockPanel x:Name="DockStudentSelectArea"
-                     Grid.Row="0"
-                     Grid.Column="0">
-          <Label Content="Tanuló"
-                 DockPanel.Dock="Top"
-                 HorizontalAlignment="Center"/>
-          <ComboBox ItemsSource="{Binding AllStudents}"
-                    DockPanel.Dock="Bottom"
-                    HorizontalAlignment="Stretch"
-                    SelectedItem="{Binding TempLesson.CurrentStudent}">
-            <ComboBox.ItemTemplate>
-              <DataTemplate>
-                <Label Content="{Binding DisplayName}"/>
-              </DataTemplate>
-            </ComboBox.ItemTemplate>
-          </ComboBox>
-        </DockPanel>
-        <DockPanel x:Name="DockSetKmArea"
-                   Grid.Row="1"
-                   Grid.Column="0">
-          <Label Content="Vezett kilóméter"
-                 DockPanel.Dock="Top"
-                 HorizontalAlignment="Center"/>
-          <NumericUpDown x:Name="NumupdownAddLesson"
-                         Value="{Binding TempLesson.DrivenKm, Mode=TwoWay}"
-                         FormatString="00"
-                         DockPanel.Dock="Top"
-                         HorizontalAlignment="Stretch"
-                         HorizontalContentAlignment="Center"/>
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition/>
-              <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Label Content="Kilóméteróra"
-                   Grid.Row="0"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
-                   HorizontalAlignment="Center"/>
-            <Label Content="Tól"
-                   Grid.Row="1"
-                   Grid.Column="0"
-                   HorizontalAlignment="Center"/>
-            <Label Content="ig"
-                   Grid.Row="1"
-                   Grid.Column="1"
-                   HorizontalAlignment="Center"/>
-            <Label Content="{Binding TempLesson.MeterAtStart}"
-                   Grid.Row="2"
-                   Grid.Column="0"
-                   HorizontalAlignment="Center"/>
-            <Label Content="{Binding TempLesson.MeterAtEnd}"
-                   Grid.Row="2"
-                   Grid.Column="1"
-                   HorizontalAlignment="Center"/>
-          </Grid>
-        </DockPanel>
+      <Grid RowDefinitions="1.5*,1.5*" ColumnDefinitions="1*, 1*"
+            ShowGridLines="False">
+          <Border Grid.Row="0" Grid.Column="0"
+                  BorderThickness="0 0 1 1"
+                  BorderBrush="Black"
+                  Margin="0"
+                  Padding="0">
+              <Grid RowDefinitions="0.5*, 0.7*, 0.7*, *"
+                    ShowGridLines="False">
+                  <!-- Első sor -->
+                  <Grid Grid.Row="0"
+                        ColumnDefinitions="1*,1*"
+                        VerticalAlignment="Top">
+                      <DockPanel Grid.Column="0"
+                                 Margin="5 0 5 0">
+                          <Label Content="Tanuló"
+                                 DockPanel.Dock="Top"
+                                 HorizontalAlignment="Stretch"
+                                 HorizontalContentAlignment="Center"/>
+                          <ComboBox ItemsSource="{Binding AllStudents}"
+                                    DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    SelectedItem="{Binding TempLesson.CurrentStudent}">
+                              <ComboBox.ItemTemplate>
+                                  <DataTemplate>
+                                      <Label Content="{Binding DisplayName}"/>
+                                  </DataTemplate>
+                              </ComboBox.ItemTemplate>
+                          </ComboBox>
+                      </DockPanel>
+                      <DockPanel Grid.Column="1"
+                                 Margin="5 0 5 0">
+                          <Label Content="Óra jellege"
+                                 DockPanel.Dock="Top"
+                                 HorizontalContentAlignment="Center"
+                                 HorizontalAlignment="Stretch"/>
+                          <ComboBox DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"/>
+                      </DockPanel>
+                  </Grid>
+                  <!-- Második sor -->
+                  <Grid Grid.Row="1"
+                        ColumnDefinitions="*, *"
+                        VerticalAlignment="Top">
+                      <DockPanel Grid.Column="0"
+                                 Margin="5 0 5 0"
+                                 VerticalAlignment="Center">
+                          <Label Content="Vezett kilóméter"
+                                 DockPanel.Dock="Top"
+                                 HorizontalAlignment="Center"/>
+                          <NumericUpDown x:Name="NumupdownAddLesson"
+                                         DockPanel.Dock="Bottom"
+                                         Value="{Binding TempLesson.DrivenKm, Mode=TwoWay}"
+                                         FormatString="00"
+                                         HorizontalAlignment="Stretch"
+                                         HorizontalContentAlignment="Center"/>
+                      </DockPanel>
+                      <Grid Grid.Column="1"
+                            Margin="5 0 5 0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center">
+                          <Grid.ColumnDefinitions>
+                              <ColumnDefinition/>
+                              <ColumnDefinition/>
+                          </Grid.ColumnDefinitions>
+                          <Grid.RowDefinitions>
+                              <RowDefinition Height="Auto"/>
+                              <RowDefinition Height="Auto"/>
+                              <RowDefinition Height="Auto"/>
+                          </Grid.RowDefinitions>
+                          <Label Content="Kilóméteróra"
+                                 Grid.Row="0"
+                                 Grid.Column="0"
+                                 Grid.ColumnSpan="2"
+                                 HorizontalAlignment="Center"/>
+                          <Label Content="Tól"
+                                 Grid.Row="1"
+                                 Grid.Column="0"
+                                 HorizontalAlignment="Center"/>
+                          <Label Content="ig"
+                                 Grid.Row="1"
+                                 Grid.Column="1"
+                                 HorizontalAlignment="Center"/>
+                          <Label Content="{Binding TempLesson.MeterAtStart}"
+                                 Grid.Row="2"
+                                 Grid.Column="0"
+                                 HorizontalAlignment="Center"/>
+                          <Label Content="{Binding TempLesson.MeterAtEnd}"
+                                 Grid.Row="2"
+                                 Grid.Column="1"
+                                 HorizontalAlignment="Center"/>
+                      </Grid>
+                  </Grid>
+                  <!-- Harmadik sor -->
+                  <Grid Grid.Row="2"
+                        Grid.ColumnDefinitions="4*, 6*"
+                        RowDefinitions="0.5*, 1.5*"
+                        ShowGridLines="False"
+                        VerticalAlignment="Top"
+                        Margin="5 0 5 0">
+                      <Label Content="Dátum"
+                             Grid.Row="0"
+                             Grid.Column="0"
+                             HorizontalAlignment="Stretch"
+                             HorizontalContentAlignment="Center"/>
+                      <DatePicker Grid.Row="1"
+                                  Grid.Column="0"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Bottom"
+                                  Margin="0 0 5 0"/>
+                      <Label Grid.Column="1"
+                             Grid.Row="0"
+                             Content="Idő"
+                             HorizontalAlignment="Stretch"
+                             HorizontalContentAlignment="Center"/>
+                      <Grid Grid.Row="1"
+                            Grid.Column="1"
+                            ColumnDefinitions="*, *"
+                            VerticalAlignment="Bottom"
+                            Margin="5 0 0 0 ">
+                          <StackPanel Grid.Column="0"
+                                      Orientation="Vertical"
+                                      Margin="0 0 5 0">
+                              <Label Content="Kezdet"
+                                     HorizontalAlignment="Stretch"
+                                     HorizontalContentAlignment="Center"/>
+                              <TimePicker ClockIdentifier="24HourClock"
+                                          HorizontalAlignment="Center"/>
+                          </StackPanel>
+                          <StackPanel Grid.Column="1"
+                                      Orientation="Vertical"
+                                      Margin="5 0 0 0">
+                              <Label Content="Befejezés"
+                                     HorizontalAlignment="Stretch"
+                                     HorizontalContentAlignment="Center"/>
+                              <TimePicker ClockIdentifier="24HourClock"
+                                          HorizontalAlignment="Center"/>
+                          </StackPanel>
+                      </Grid>
+                  </Grid>
+                  <!-- Negyedik sor -->
+                  <Grid Grid.Row="3"
+                        Grid.ColumnDefinitions="0.4*, 0.6*"
+                        RowDefinitions="*, *"
+                        Margin="5 0 5 0">
+                      <DockPanel Grid.Row="0"
+                                 Grid.Column="0"
+                                 Margin="0 0 5 0">
+                          <Label Content="Óra jellege"
+                                 DockPanel.Dock="Top"
+                                 HorizontalContentAlignment="Center"
+                                 HorizontalAlignment="Stretch"/>
+                          <ComboBox DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"/>
+                      </DockPanel>
+                      <DockPanel Grid.Row="1"
+                                 Grid.Column="0"
+                                 Margin="0 0 5 0">
+                          <Label Content="Jármű rendszáma"
+                                 DockPanel.Dock="Top"
+                                 HorizontalAlignment="Stretch"
+                                 HorizontalContentAlignment="Center"/>
+                          <ComboBox DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"/>
+                      </DockPanel>
+                      <DockPanel Grid.Row="0"
+                                 Grid.Column="1"
+                                 Margin="5 0 0 0">
+                          <Label Content="Indulási helyszín"
+                                 DockPanel.Dock="Top"
+                                 HorizontalAlignment="Stretch"
+                                 HorizontalContentAlignment="Center"/>
+                          <ComboBox DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"/>
+                      </DockPanel>
+                      <DockPanel Grid.Row="1"
+                                 Grid.Column="1"
+                                 Margin="5 0 0 0">
+                          <Label Content="Érkezési helyszín"
+                                 DockPanel.Dock="Top"
+                                 HorizontalAlignment="Stretch"
+                                 HorizontalContentAlignment="Center"/>
+                          <ComboBox DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"/>
+                      </DockPanel>
+                  </Grid>
+              </Grid>
+          </Border>
+          <StackPanel Grid.Row="0" Grid.Column="1"
+                      Orientation="Vertical"
+                                  Margin="5 0 5 0">
+                          
+                          
+                          
+                          
+                          
+                          
+                      </StackPanel>
       </Grid>
     </TabItem>
   </TabControl>

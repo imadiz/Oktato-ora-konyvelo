@@ -18,10 +18,7 @@ namespace Oktato_ora_konyvelo.Classes
             get => date;
             set
             {
-                if (SetProperty(ref date, value, true))
-                {
-                    CalculateData();
-                }
+                if (SetProperty(ref date, value, true)) CalculateData();
             }
         }
 
