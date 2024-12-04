@@ -18,7 +18,7 @@ namespace Oktato_ora_konyvelo.ViewModels
         ObservableCollection<Student> allStudents = new();
 
         [ObservableProperty]
-        Settings allSettings = new("18519", "Anfi1978");
+        Settings allSettings = new("18519", "");
 
         [ObservableProperty]
         ToBeAddedLesson tempLesson;
