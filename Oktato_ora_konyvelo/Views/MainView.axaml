@@ -9,10 +9,11 @@
              mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
              x:Class="Oktato_ora_konyvelo.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <vm:MainViewModel/>
-  </Design.DataContext>
-  <UserControl.Styles>
+    
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+    <UserControl.Styles>
       <Style Selector="#LessonDisplay > ListBoxItem">
         <Setter Property="IsHitTestVisible" Value="False" />
         <Setter Property="Focusable" Value="False" />
@@ -36,15 +37,17 @@
           <Setter Property="Background" Value="#EEE"/>
       </Style>
   </UserControl.Styles>
-  <UserControl.Resources>
+    <UserControl.Resources>
     <ResourceDictionary>
       <converters:KVARStatusDisplayConverter x:Key="KVARConverter"/>
+      <converters:StartPlaceFilter x:Key="OnlyStartPlaces"/>
+      <converters:EndPlaceFilter x:Key="OnlyEndPlaces"/>
     </ResourceDictionary>
   </UserControl.Resources>
   <TabControl TabStripPlacement="Top"
               SelectedIndex="2"
               Padding="0"><!--Ez az érték debugolásra van.-->
-    <TabItem Header="Összes óra">
+      <TabItem Header="Összes óra">
       <DockPanel Grid.IsSharedSizeScope="True">
         <Grid x:Name="LessonTitleBar"
               DockPanel.Dock="Top"
@@ -175,7 +178,7 @@
         </ItemsControl>
       </DockPanel>
     </TabItem>
-    <TabItem Header="Tanulók">
+      <TabItem Header="Tanulók">
       <DockPanel>
         <Grid DockPanel.Dock="Top"
               Margin="29 0 73 0"
@@ -338,7 +341,7 @@
         </ListBox>
       </DockPanel>
     </TabItem>
-    <TabItem Header="Óra felvétele">
+      <TabItem Header="Óra felvétele">
       <Grid RowDefinitions="Auto, 1*" ColumnDefinitions="*, *"
             ShowGridLines="False">
           <Border Grid.Row="0" Grid.Column="0"
@@ -514,9 +517,18 @@
                                  DockPanel.Dock="Top"
                                  HorizontalAlignment="Stretch"
                                  HorizontalContentAlignment="Center"/>
-                          <ComboBox DockPanel.Dock="Bottom"
+                          <ComboBox ItemsSource="{Binding AllPlaces, 
+                                                  Converter={StaticResource OnlyStartPlaces},
+                                                  Mode=OneWay}"
+                                    DockPanel.Dock="Bottom"
                                     HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center"/>
+                                    HorizontalContentAlignment="Center">
+                              <ComboBox.ItemTemplate>
+                                  <DataTemplate>
+                                      <Label Content="{Binding PlaceName}"/>
+                                  </DataTemplate>
+                              </ComboBox.ItemTemplate>
+                          </ComboBox>
                       </DockPanel>
                       <DockPanel Grid.Row="1"
                                  Grid.Column="1"
@@ -525,9 +537,18 @@
                                  DockPanel.Dock="Top"
                                  HorizontalAlignment="Stretch"
                                  HorizontalContentAlignment="Center"/>
-                          <ComboBox DockPanel.Dock="Bottom"
+                          <ComboBox ItemsSource="{Binding AllPlaces,
+                                                  Converter={StaticResource OnlyEndPlaces},
+                                                  Mode=OneWay}"
+                                    DockPanel.Dock="Bottom"
                                     HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Center"/>
+                                    HorizontalContentAlignment="Center">
+                              <ComboBox.ItemTemplate>
+                                  <DataTemplate>
+                                      <Label Content="{Binding PlaceName}"/>
+                                  </DataTemplate>
+                              </ComboBox.ItemTemplate>
+                          </ComboBox>
                       </DockPanel>
                   </Grid>
                   <!-- Ötödik sor -->
@@ -540,5 +561,8 @@
           </Border>
       </Grid>
     </TabItem>
+      <TabItem Header="KVAR kezelés">
+          
+      </TabItem>
   </TabControl>
 </UserControl>

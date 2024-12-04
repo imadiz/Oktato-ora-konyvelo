@@ -10,18 +10,26 @@ namespace Oktato_ora_konyvelo.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
-        #region Data
-        [ObservableProperty]
-        ObservableCollection<Lesson> allLessons = new();
+        #region Data (ergo Model)
 
-        [ObservableProperty]
-        ObservableCollection<Student> allStudents = new();
+        #region Lessons
 
+        [ObservableProperty] ObservableCollection<Lesson> allLessons = new();
+
+        [ObservableProperty] ObservableCollection<Student> allStudents = new();
+
+        [ObservableProperty] ToBeAddedLesson tempLesson;
+
+        #endregion
+        
+        #region Places, Vehicles
+        
+        [ObservableProperty] ObservableCollection<Place> allPlaces = new();
+        
+        #endregion
+        
         [ObservableProperty]
         Settings allSettings = new("18519", "");
-
-        [ObservableProperty]
-        ToBeAddedLesson tempLesson;
         #endregion
 
         #region Manage files
@@ -34,20 +42,42 @@ namespace Oktato_ora_konyvelo.ViewModels
 
         }
         #endregion
-
-        public void AddLesson()
+        
+        public void AddTestData()
         {
-            Student CurrentStudent = AllStudents[new Random().Next(2)];
+            AllStudents.Add(new Student("Teszt Elek (12345678)", AllLessons));
+            AllStudents.Add(new Student("Michael Myers (87654321)", AllLessons));
+
+            AllLessons.CollectionChanged += AllLessons_CollectionChanged;
+
             AllLessons.Add(new Lesson(new DateOnly(2024, 08, 01),
-                                      new TimeOnly(08, 00),
-                                      new TimeOnly(9, 40),
-                                      CurrentStudent,
-                                      "F/o",
-                                      "Autósiskola",
-                                      "Autósiskola",
-                                      new Random().Next(1, 30),
-                                      Convert.ToBoolean(new Random().Next(2)),
-                                      AllLessons));
+                new TimeOnly(08, 00),
+                new TimeOnly(9, 40),
+                AllStudents[0],
+                "A",
+                "Autósiskola",
+                "Autósiskola",
+                18,
+                false,
+                AllLessons,
+                true,
+                511000));
+
+            AllLessons.Add(new Lesson(new DateOnly(2024, 09, 03),
+                new TimeOnly(10, 00),
+                new TimeOnly(11, 40),
+                AllStudents[1],
+                "F/o",
+                "Autósiskola",
+                "Autósiskola",
+                81,
+                true,
+                AllLessons,
+                false));
+            
+            AllPlaces.Add(new Place("Autósiskola", true, true, "Miklós Jakab suli"));
+            AllPlaces.Add(new Place("Első indulási helyszín", true, false, "123 Abc utca 321"));
+            AllPlaces.Add(new Place("Első érkezési helyszín", false, true, "321 Zyx utca 123"));
         }
 
         #region Tanuló adatok frissítése
@@ -72,34 +102,7 @@ namespace Oktato_ora_konyvelo.ViewModels
             
             TempLesson = new ToBeAddedLesson(AllLessons);
 
-            AllStudents.Add(new Student("Teszt Elek (12345678)", AllLessons));
-            AllStudents.Add(new Student("Michael Myers (87654321)", AllLessons));
-
-            AllLessons.CollectionChanged += AllLessons_CollectionChanged;
-
-            AllLessons.Add(new Lesson(new DateOnly(2024, 08, 01),
-                                      new TimeOnly(08, 00),
-                                      new TimeOnly(9, 40),
-                                      AllStudents[0],
-                                      "A",
-                                      "Autósiskola",
-                                      "Autósiskola",
-                                      18,
-                                      false,
-                                      AllLessons,
-                                      true,
-                                      511000));
-
-            AllLessons.Add(new Lesson(new DateOnly(2024, 09, 03),
-                                      new TimeOnly(10, 00),
-                                      new TimeOnly(11, 40),
-                                      AllStudents[1],
-                                      "F/o",
-                                      "Autósiskola",
-                                      "Autósiskola",
-                                      511050,
-                                      true,
-                                      AllLessons));
+            AddTestData();
         }
     }
 }

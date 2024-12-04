@@ -7,5 +7,6 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
+        var test = 0;
     }
 }
