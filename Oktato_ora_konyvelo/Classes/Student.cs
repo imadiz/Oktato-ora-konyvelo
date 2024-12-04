@@ -70,12 +70,10 @@ namespace Oktato_ora_konyvelo.Classes
             if (StudentLessons.All(x=>x.IsRecordedInKVAR.Equals(true)))//Ha az összes óra rögzítve van KVAR-ban
             {
                 KVARStatus = "Rögzítve";
-                return;
             }
             else if (StudentLessons.Any(x=>x.IsRecordedInKVAR.Equals(true)))//Ha legalább egy óra rögzítve van KVAR-ban
             {
                 KVARStatus = "Részleges";
-                return;
             }
             else
             {

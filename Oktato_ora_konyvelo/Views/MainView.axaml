@@ -227,7 +227,7 @@
                                Grid.Column="6"/>
                     <TextBlock Text="{Binding FeLessonCount}"
                                Grid.Column="7"/>
-                    <TextBlock Text="{Binding KVARStatus, Converter={StaticResource KVARConverter}}"
+                    <TextBlock Text="{Binding KVARStatus}"
                                Grid.Column="8"/>
                   </Grid>
                 </Expander.Header>
@@ -560,7 +560,7 @@
               </Grid>
           </Border>
       </Grid>
-    </TabItem>
+      </TabItem>
       <TabItem Header="KVAR kezelés">
           
       </TabItem>

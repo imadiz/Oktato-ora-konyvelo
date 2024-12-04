@@ -13,6 +13,7 @@ namespace Oktato_ora_konyvelo.Converters
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             bool KVARStatus = System.Convert.ToBoolean(value);
+            
             if (KVARStatus)
                 return "Rögzítve";
             else
