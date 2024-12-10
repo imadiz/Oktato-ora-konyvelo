@@ -7,6 +7,6 @@
         mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
         x:Class="Oktato_ora_konyvelo.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Oktato_ora_konyvelo">
+        Title="Oktató óra könyvelő">
         <views:MainView />
 </Window>

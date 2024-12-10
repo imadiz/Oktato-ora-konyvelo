@@ -160,6 +160,7 @@ namespace Oktato_ora_konyvelo.Classes
             //TODO: mindent ami bemenet nullable értékké varázsolni, a validatorok kezelik okosan.
             //Messaging-el értesíteni a felületet, hogy amíg az összes érték nem helyes, addig nem lehet órát hozzáadni.
             //Minden fontos UI-on látszódó érték változásakor újraszámolni mindent.
+            //BlackoutDates a CalendarDatePicker-en!
         }
         public void GetCurrentStudentPreviousLessons(ObservableCollection<Lesson> allLessons)
         {
@@ -184,33 +185,27 @@ namespace Oktato_ora_konyvelo.Classes
             AllDrivenMinutes = previousLessons.Any() ? previousLessons.Sum(x => x.DrivenMinutes) + DrivenMinutes : DrivenMinutes;//Göngyölt perc = Eddigi összes vezetett perc + vezetett perc
         }
 
-        public static ValidationResult? ValidateDate(DateTime date, ValidationContext validationContext)
+        public static ValidationResult? ValidateDate(DateOnly? dateinput, ValidationContext validationContext)
         {
-            if (DateTime.Compare(date, DateTime.Now) < 0)
-            {
-                return ValidationResult.Success;
-            }
-            else
-            {
-                return new("A dátumnak régebbinek kell lennie a mai napnál!");
-            }
+            ToBeAddedLesson instance = (ToBeAddedLesson)validationContext.ObjectInstance;
+            
+            if (dateinput is null) return null;//Ha nincs érték, nincs visszajelzés
+            
+            if (instance.allLessons.Count(x=>x.Date.Equals(dateinput)) >= 5) //Ha már megvan az 5 tanulós limit egy napra
+                return new ValidationResult("Nem lehet több tanuló a kiválasztott napon!");
+            
+            return ValidationResult.Success;
         }
         public static ValidationResult? ValidateDrivenKm(int? km, ValidationContext validationContext)
         {
-            if (km is null)
-            {
-                return new("Nem megfelelő érték!");
-            }
+            if (km is null)//Ha nincs érték, nincs visszajelzés
+                return null;
             
             if (km < 1)
-            {
                 return new("A megadott úthossz túl kevés!");
-            }
             
             if (km > 100)
-            {
-                 return new("A megadott úthossz túl sok!");
-            }
+                return new("A megadott úthossz túl sok!");
             
             return ValidationResult.Success;
         }

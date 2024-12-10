@@ -9,4 +9,9 @@ public partial class MainView : UserControl
         InitializeComponent();
         var test = 0;
     }
+
+    private void CbxStudent_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        ;
+    }
 }
