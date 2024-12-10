@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 
 namespace Oktato_ora_konyvelo.Classes
 {
@@ -150,11 +152,9 @@ namespace Oktato_ora_konyvelo.Classes
 
         private ObservableCollection<Lesson> previousLessons = [];
         private ObservableCollection<Lesson> allLessons;
-
         public ToBeAddedLesson(ObservableCollection<Lesson> allLessons)
         {
             this.allLessons = allLessons;
-
             GetCurrentStudentPreviousLessons(this.allLessons);
             CalculateData();
             //TODO: mindent ami bemenet nullable értékké varázsolni, a validatorok kezelik okosan.
