@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -14,9 +15,9 @@ namespace Oktato_ora_konyvelo.Classes
 {
     public partial class ToBeAddedLesson : ObservableValidator
     {
-        private DateOnly date;
+        private DateOnly? date;
         [CustomValidation(typeof(ToBeAddedLesson), nameof(ValidateDate))]
-        public DateOnly Date
+        public DateOnly? Date
         {
             get => date;
             set
@@ -25,8 +26,8 @@ namespace Oktato_ora_konyvelo.Classes
             }
         }
 
-        private TimeOnly startTime;
-        public TimeOnly StartTime
+        private TimeOnly? startTime;
+        public TimeOnly? StartTime
         {
             get => startTime;
             set
@@ -38,8 +39,8 @@ namespace Oktato_ora_konyvelo.Classes
             }
         }
 
-        private TimeOnly endTime;
-        public TimeOnly EndTime
+        private TimeOnly? endTime;
+        public TimeOnly? EndTime
         {
             get => endTime;
             set
@@ -51,8 +52,8 @@ namespace Oktato_ora_konyvelo.Classes
             }
         }
 
-        private int drivenMinutes;
-        public int DrivenMinutes
+        private int? drivenMinutes;
+        public int? DrivenMinutes
         {
             get => drivenMinutes;
             set
@@ -64,8 +65,8 @@ namespace Oktato_ora_konyvelo.Classes
             }
         }
 
-        private int allDrivenMinutes;
-        public int AllDrivenMinutes
+        private int? allDrivenMinutes;
+        public int? AllDrivenMinutes
         {
             get => allDrivenMinutes;
             set
@@ -89,7 +90,7 @@ namespace Oktato_ora_konyvelo.Classes
         }
 
         private LessonType? type;
-        public LessonType? Type
+        public LessonType? LType
         {
             get => type;
             set
@@ -169,21 +170,31 @@ namespace Oktato_ora_konyvelo.Classes
         {
             this.allLessons = allLessons;
             CalculateData();
-            //TODO: mindent ami bemenet nullable értékké varázsolni, a validatorok kezelik okosan.
-            //Messaging-el értesíteni a felületet, hogy amíg az összes érték nem helyes, addig nem lehet órát hozzáadni.
-            //Minden fontos UI-on látszódó érték változásakor újraszámolni mindent.
+            //Amíg az összes érték nem helyes, addig nem lehet órát hozzáadni.
             //BlackoutDates a CalendarDatePicker-en!
         }
         public void CalculateData()
         {
             if (CurrentStudent is null) return;//Ha nincs tanuló kiválasztva, akkor ne számolj semmit
             
-            MeterAtStart = CurrentStudent.StudentLessons.Any() ? CurrentStudent.StudentLessons.Last().MeterAtEnd : 0;//Km óra tanóra elején = utolsó óra + vezetett km
-            MeterAtEnd = DrivenKm is null ? meterAtStart : meterAtStart + drivenKm;//Km óra tanóra végén = Km óra tanóra elején + vezetett km
-            AllKm = CurrentStudent.StudentLessons.Any() ? CurrentStudent.StudentLessons.Sum(x => x.DrivenKm) + DrivenKm : 0 + DrivenKm;//Göngyölt km = Eddigi összes vezetett km + vezetett km
+            MeterAtStart = CurrentStudent.StudentLessons.Any()
+                ? CurrentStudent.StudentLessons.Last().MeterAtEnd
+                : 0; //Km óra tanóra elején = utolsó óra + vezetett km
             
-            EndTime = !StartTime.Equals(new(0,00)) ? StartTime.AddMinutes(DrivenMinutes) : new(0, 00);//Óra végidőpontja = Óra kezdete + vezetett percek
-            AllDrivenMinutes = CurrentStudent.StudentLessons.Any() ? CurrentStudent.StudentLessons.Sum(x => x.DrivenMinutes) + DrivenMinutes : DrivenMinutes;//Göngyölt perc = Eddigi összes vezetett perc + vezetett perc
+            MeterAtEnd = DrivenKm is null
+                    ? meterAtStart
+                    : meterAtStart + drivenKm; //Km óra tanóra végén = Km óra tanóra elején + vezetett km
+            
+            AllKm = CurrentStudent.StudentLessons.Any()
+                ? CurrentStudent.StudentLessons.Sum(x => x.DrivenKm) + DrivenKm
+                : 0 + DrivenKm; //Göngyölt km = Eddigi összes vezetett km + vezetett km
+            
+            EndTime = !StartTime.Equals(new TimeOnly(0, 00))
+                ? StartTime?.AddMinutes((double)DrivenMinutes!)
+                : new TimeOnly(0, 00); //Óra végidőpontja = Óra kezdete + vezetett percek
+            AllDrivenMinutes = CurrentStudent.StudentLessons.Any()
+                ? CurrentStudent.StudentLessons.Sum(x => x.DrivenMinutes) + DrivenMinutes
+                : DrivenMinutes; //Göngyölt perc = Eddigi összes vezetett perc + vezetett perc
 
             PreviousLessonCount = CurrentStudent is null ? null : AllDrivenMinutes / 50;//Eddigi órák száma (Az alkalom 100 perc(ergo. 2 óra)!)
             OccasionCount = CurrentStudent!.StudentLessons.Count;//Eddigi alkalmak száma
@@ -196,13 +207,12 @@ namespace Oktato_ora_konyvelo.Classes
             
             if (dateinput is null) return null;//Ha nincs érték, nincs visszajelzés
             
-            if (instance.allLessons.Count(x=>x.Date.Equals(dateinput)) >= 5) //Ha már megvan az 5 tanulós limit egy napra
-                return new ValidationResult("Nem lehet több tanuló a kiválasztott napon!");
-            
             return ValidationResult.Success;
         }
         public static ValidationResult? ValidateDrivenKm(int? km, ValidationContext validationContext)
         {
+            ToBeAddedLesson instance = (ToBeAddedLesson)validationContext.ObjectInstance;
+            
             if (km is null)//Ha nincs érték, nincs visszajelzés
                 return null;
             

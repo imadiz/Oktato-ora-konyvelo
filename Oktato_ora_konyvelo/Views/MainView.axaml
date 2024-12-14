@@ -375,7 +375,9 @@
                                           SelectedItem="{Binding TempLesson.CurrentStudent}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Label Content="{Binding DisplayName}" />
+                                            <Label Content="{Binding DisplayName}" 
+                                                   HorizontalContentAlignment="Center"
+                                                   VerticalContentAlignment="Center"/>
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
@@ -388,7 +390,16 @@
                                        HorizontalAlignment="Stretch" />
                                 <ComboBox DockPanel.Dock="Bottom"
                                           HorizontalAlignment="Stretch"
-                                          HorizontalContentAlignment="Center"/>
+                                          HorizontalContentAlignment="Center"
+                                          ItemsSource="{Binding Vehicles}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Content="{Binding}"
+                                                   VerticalContentAlignment="Center"
+                                                   HorizontalContentAlignment="Center"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                             </DockPanel>
                         </Grid>
                         <!-- Második sor -->
@@ -456,7 +467,8 @@
                                    Grid.Column="0"
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Center" />
-                            <CalendarDatePicker x:Name="DatePicker_RecordLesson" Grid.Row="1"
+                            <CalendarDatePicker x:Name="DatePicker_RecordLesson"
+                                                Grid.Row="1"
                                                 Grid.Column="0"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Bottom"
@@ -508,7 +520,7 @@
                                           HorizontalAlignment="Stretch"
                                           HorizontalContentAlignment="Center"
                                           ItemsSource="{Binding RecordLessonCbxOptions}"
-                                          SelectedValue="{Binding TempLesson.Type, Converter={StaticResource LessonTypeConverter}}"/>
+                                          SelectedValue="{Binding TempLesson.LType, Converter={StaticResource LessonTypeConverter}}"/>
                             </DockPanel>
                             <Button Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
                                     Content="Óra hozzáadása"
@@ -692,10 +704,10 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1"
                                     Orientation="Vertical">
-                            <Label Content="{Binding TempLesson.OccasionCount}"/>
-                            <Label Content="{Binding TempLesson.PreviousLessonCount}"/>
-                            <Label Content="{Binding TempLesson.AllKm}"/>
-                            <Label Content="{Binding TempLesson.AllDrivenMinutes}"/>
+                            <Label Content="{Binding TempLesson.OccasionCount, TargetNullValue=0}"/>
+                            <Label Content="{Binding TempLesson.PreviousLessonCount, TargetNullValue=0}"/>
+                            <Label Content="{Binding TempLesson.AllKm, StringFormat={}{0:N0}, TargetNullValue=0}"/>
+                            <Label Content="{Binding TempLesson.AllDrivenMinutes, StringFormat={}{0:N0}, TargetNullValue=0}"/>
                         </StackPanel>
                     </Grid>
                     <Border Grid.Column="1" Grid.Row="1"
@@ -711,10 +723,10 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1"
                                         Orientation="Vertical">
-                                <Label Content="{Binding TempLesson.CurrentStudent.ALessonCount}"/>
-                                <Label Content="{Binding TempLesson.CurrentStudent.FvLessonCount}"/>
-                                <Label Content="{Binding TempLesson.CurrentStudent.FoLessonCount}"/>
-                                <Label Content="{Binding TempLesson.CurrentStudent.FeLessonCount}"/>
+                                <Label Content="{Binding TempLesson.CurrentStudent.ALessonCount, FallbackValue=0}"/>
+                                <Label Content="{Binding TempLesson.CurrentStudent.FvLessonCount, FallbackValue=0}"/>
+                                <Label Content="{Binding TempLesson.CurrentStudent.FoLessonCount, FallbackValue=0}"/>
+                                <Label Content="{Binding TempLesson.CurrentStudent.FeLessonCount, FallbackValue=0}"/>
                             </StackPanel>
                         </Grid>
                     </Border>

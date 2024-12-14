@@ -31,6 +31,7 @@ namespace Oktato_ora_konyvelo.ViewModels
         #endregion
         
         #region Places, Vehicles
+        [ObservableProperty] ObservableCollection<string> vehicles = new(){"LWC256", "SPT867"};
         
         [ObservableProperty] ObservableCollection<Place> allPlaces = new();
         
