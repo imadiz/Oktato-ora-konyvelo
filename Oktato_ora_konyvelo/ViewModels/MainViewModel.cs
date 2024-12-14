@@ -2,12 +2,20 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Oktato_ora_konyvelo.Classes;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Oktato_ora_konyvelo.ViewModels;
 
 namespace Oktato_ora_konyvelo.ViewModels
 {
+    public enum LessonType
+    {
+        A,
+        Fv,
+        Fo,
+        Fe
+    }
     public partial class MainViewModel : ViewModelBase
     {
         #region Data (ergo Model)
@@ -27,6 +35,8 @@ namespace Oktato_ora_konyvelo.ViewModels
         [ObservableProperty] ObservableCollection<Place> allPlaces = new();
         
         #endregion
+
+        [ObservableProperty] List<string> recordLessonCbxOptions = new(){ "Alap", "Városi", "Országúti", "Éjszakai" };
         
         [ObservableProperty]
         Settings allSettings = new("18519", "");
@@ -54,20 +64,20 @@ namespace Oktato_ora_konyvelo.ViewModels
                 new TimeOnly(08, 00),
                 new TimeOnly(9, 40),
                 AllStudents[0],
-                "A",
+                LessonType.A,
                 "Autósiskola",
                 "Autósiskola",
                 18,
                 false,
                 AllLessons,
                 true,
-                511000));
+                522535));
 
             AllLessons.Add(new Lesson(new DateOnly(2024, 09, 03),
                 new TimeOnly(10, 00),
                 new TimeOnly(11, 40),
                 AllStudents[1],
-                "F/o",
+                LessonType.Fo,
                 "Autósiskola",
                 "Autósiskola",
                 81,
@@ -81,13 +91,12 @@ namespace Oktato_ora_konyvelo.ViewModels
         }
 
         #region Tanuló adatok frissítése
-        public void UpdateStudentData()
+        private void UpdateStudentData()
         {
             foreach (Student item in AllStudents)
             {
                 item.UpdateData();
             }
-            TempLesson.GetCurrentStudentPreviousLessons(AllLessons);
         }
 
         private void AllLessons_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -100,9 +109,9 @@ namespace Oktato_ora_konyvelo.ViewModels
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("hu-HU");//Magyar Dátum és idő formátumokra váltás
             
-            TempLesson = new ToBeAddedLesson(AllLessons);
+            TempLesson = new ToBeAddedLesson(AllLessons);//Proxy óra az órarögzítéshez
 
-            AddTestData();
+            AddTestData();//Tesztadatok hozzáadása
         }
     }
 }

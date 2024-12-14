@@ -53,7 +53,7 @@ namespace Oktato_ora_konyvelo.Classes
         {
             StudentLessons.Clear();
 
-            foreach (Lesson studentlesson in AllLessons.Where(x=>x.Student.Id.Equals(Id)).OrderBy(x => x.Date).OrderBy(x => x.StartTime))
+            foreach (Lesson studentlesson in AllLessons.Where(x=>x.Student.Id.Equals(Id)).OrderBy(x => x.Date).ThenBy(x => x.StartTime))
             {
                 StudentLessons.Add(studentlesson);
             }
@@ -62,10 +62,10 @@ namespace Oktato_ora_konyvelo.Classes
             DrivenDistance = StudentLessons.Sum(x => x.DrivenKm);
             AllLessonCount = StudentLessons.Count;
 
-            ALessonCount = StudentLessons.Count(x => x.LessonType.Equals("A"));
-            FvLessonCount = StudentLessons.Count(x => x.LessonType.Equals("F/v"));
-            FoLessonCount = StudentLessons.Count(x => x.LessonType.Equals("F/o"));
-            FeLessonCount = StudentLessons.Count(x => x.LessonType.Equals("F/é"));
+            ALessonCount = StudentLessons.Count(x => x.Type.Equals(LessonType.A));
+            FvLessonCount = StudentLessons.Count(x => x.Type.Equals(LessonType.Fv));
+            FoLessonCount = StudentLessons.Count(x => x.Type.Equals(LessonType.Fo));
+            FeLessonCount = StudentLessons.Count(x => x.Type.Equals(LessonType.Fe));
 
             if (StudentLessons.All(x=>x.IsRecordedInKVAR.Equals(true)))//Ha az összes óra rögzítve van KVAR-ban
             {

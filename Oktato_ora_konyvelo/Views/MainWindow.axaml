@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:Oktato_ora_konyvelo.Views"
         mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
+        MinHeight="768"
+        MinWidth="1366"
         x:Class="Oktato_ora_konyvelo.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Oktató óra könyvelő">

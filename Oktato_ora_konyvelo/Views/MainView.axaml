@@ -9,7 +9,6 @@
              mc:Ignorable="d" d:DesignWidth="1366" d:DesignHeight="768"
              x:Class="Oktato_ora_konyvelo.Views.MainView"
              x:DataType="vm:MainViewModel">
-
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
@@ -46,6 +45,7 @@
             <converters:StartPlaceFilter x:Key="OnlyStartPlaces" />
             <converters:EndPlaceFilter x:Key="OnlyEndPlaces" />
             <converters:StudentLessonsConverter x:Key="LessonsConverter" />
+            <converters:TempLessonCbxConverter x:Key="LessonTypeConverter"/>
             <DataTemplate x:Key="StudentLessonNullTemplate">
                 <Label Content="Nincs kiválasztva tanuló!" />
             </DataTemplate>
@@ -148,7 +148,7 @@
                                        Grid.Column="2"
                                        HorizontalAlignment="Stretch"
                                        HorizontalContentAlignment="Center" />
-                                <Label Content="{Binding LessonType}"
+                                <Label Content="{Binding Type}"
                                        Grid.Column="3"
                                        HorizontalAlignment="Stretch"
                                        HorizontalContentAlignment="Center" />
@@ -164,9 +164,9 @@
                                            HorizontalAlignment="Stretch"
                                            TextAlignment="Center"
                                            VerticalAlignment="Center">
-                                    <Run Text="{Binding MeterAtStart}" />
+                                    <Run Text="{Binding MeterAtStart, StringFormat={}{0:N0}}" />
                                     <Run Text=" - " />
-                                    <Run Text="{Binding MeterAtEnd}" />
+                                    <Run Text="{Binding MeterAtEnd, StringFormat={}{0:N0}}" />
                                 </TextBlock>
                                 <Label Content="{Binding AllKm}"
                                        Grid.Column="7"
@@ -315,7 +315,7 @@
                                                     </TextBlock>
                                                     <TextBlock Text="{Binding DrivenMinutes}"
                                                                Grid.Column="2" />
-                                                    <TextBlock Text="{Binding LessonType}"
+                                                    <TextBlock Text="{Binding Type}"
                                                                Grid.Column="3" />
                                                     <TextBlock Text="{Binding StartPlace}"
                                                                Grid.Column="4" />
@@ -350,8 +350,7 @@
             </DockPanel>
         </TabItem>
         <TabItem Header="Óra felvétele">
-            <Grid RowDefinitions="Auto, 1*" ColumnDefinitions="*, *"
-                  ShowGridLines="False">
+            <Grid RowDefinitions="Auto, 1*" ColumnDefinitions="*, *">
                 <Border Grid.Row="0" Grid.Column="0"
                         BorderThickness="0 0 1 1"
                         BorderBrush="Black"
@@ -361,7 +360,7 @@
                           ShowGridLines="False">
                         <!-- Első sor -->
                         <Grid Grid.Row="0"
-                              ColumnDefinitions="1*,1*"
+                              ColumnDefinitions="1.5*,1*"
                               VerticalAlignment="Top">
                             <DockPanel Grid.Column="0"
                                        Margin="5 0 5 0">
@@ -383,13 +382,13 @@
                             </DockPanel>
                             <DockPanel Grid.Column="1"
                                        Margin="5 0 5 0">
-                                <Label Content="Óra jellege"
+                                <Label Content="Jármű rendszáma"
                                        DockPanel.Dock="Top"
                                        HorizontalContentAlignment="Center"
                                        HorizontalAlignment="Stretch" />
                                 <ComboBox DockPanel.Dock="Bottom"
                                           HorizontalAlignment="Stretch"
-                                          HorizontalContentAlignment="Center" />
+                                          HorizontalContentAlignment="Center"/>
                             </DockPanel>
                         </Grid>
                         <!-- Második sor -->
@@ -435,11 +434,11 @@
                                        Grid.Row="1"
                                        Grid.Column="1"
                                        HorizontalAlignment="Center" />
-                                <Label Content="{Binding TempLesson.MeterAtStart}"
+                                <Label Content="{Binding TempLesson.MeterAtStart, StringFormat={}{0:N0}}"
                                        Grid.Row="2"
                                        Grid.Column="0"
                                        HorizontalAlignment="Center" />
-                                <Label Content="{Binding TempLesson.MeterAtEnd}"
+                                <Label Content="{Binding TempLesson.MeterAtEnd, StringFormat={}{0:N0}}"
                                        Grid.Row="2"
                                        Grid.Column="1"
                                        HorizontalAlignment="Center" />
@@ -457,7 +456,7 @@
                                    Grid.Column="0"
                                    HorizontalAlignment="Stretch"
                                    HorizontalContentAlignment="Center" />
-                            <CalendarDatePicker Grid.Row="1"
+                            <CalendarDatePicker x:Name="DatePicker_RecordLesson" Grid.Row="1"
                                                 Grid.Column="0"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Bottom"
@@ -504,21 +503,20 @@
                                        DockPanel.Dock="Top"
                                        HorizontalContentAlignment="Center"
                                        HorizontalAlignment="Stretch" />
-                                <ComboBox DockPanel.Dock="Bottom"
+                                <ComboBox x:Name="cbx_LessonType"
+                                          DockPanel.Dock="Bottom"
                                           HorizontalAlignment="Stretch"
-                                          HorizontalContentAlignment="Center" />
+                                          HorizontalContentAlignment="Center"
+                                          ItemsSource="{Binding RecordLessonCbxOptions}"
+                                          SelectedValue="{Binding TempLesson.Type, Converter={StaticResource LessonTypeConverter}}"/>
                             </DockPanel>
-                            <DockPanel Grid.Row="1"
-                                       Grid.Column="0"
-                                       Margin="0 0 5 0">
-                                <Label Content="Jármű rendszáma"
-                                       DockPanel.Dock="Top"
-                                       HorizontalAlignment="Stretch"
-                                       HorizontalContentAlignment="Center" />
-                                <ComboBox DockPanel.Dock="Bottom"
-                                          HorizontalAlignment="Stretch"
-                                          HorizontalContentAlignment="Center" />
-                            </DockPanel>
+                            <Button Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
+                                    Content="Óra hozzáadása"
+                                    Margin="0 5 0 5"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"/>
                             <DockPanel Grid.Row="0"
                                        Grid.Column="1"
                                        Margin="5 0 0 0">
@@ -562,15 +560,8 @@
                                 </ComboBox>
                             </DockPanel>
                         </Grid>
-                        <!-- Ötödik sor -->
-                        <Button Grid.Row="4"
-                                Content="Óra hozzáadása"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Center"
-                                Margin="5">
-                        </Button>
                     </Grid>
-                </Border>
+                </Border><!-- Adatbeviteli rész -->
                 <DockPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                            HorizontalAlignment="Stretch"
                            VerticalAlignment="Stretch"
@@ -647,7 +638,7 @@
                                         <Run Text=" - " />
                                         <Run Text="{Binding DataType=classes:Lesson, Path=EndTime}" />
                                     </TextBlock>
-                                    <Label Content="{Binding DataType=classes:Lesson, Path=LessonType}"
+                                    <Label Content="{Binding DataType=classes:Lesson, Path=Type}"
                                            Grid.Column="2"
                                            HorizontalAlignment="Stretch"
                                            HorizontalContentAlignment="Center" />
@@ -655,9 +646,9 @@
                                                HorizontalAlignment="Stretch"
                                                TextAlignment="Center"
                                                VerticalAlignment="Center">
-                                        <Run Text="{Binding DataType=classes:Lesson, Path=MeterAtStart}" />
+                                        <Run Text="{Binding DataType=classes:Lesson, Path=MeterAtStart, StringFormat={}{0:N0}}" />
                                         <Run Text=" - " />
-                                        <Run Text="{Binding DataType=classes:Lesson, Path=MeterAtEnd}" />
+                                        <Run Text="{Binding DataType=classes:Lesson, Path=MeterAtEnd, StringFormat={}{0:N0}}" />
                                     </TextBlock>
                                     <Label Content="{Binding DataType=classes:Lesson, Path=DrivenKm}"
                                            Grid.Column="4"
@@ -675,7 +666,59 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </DockPanel>
+                </DockPanel><!-- Óra listázás rész a jobb oldalt -->
+                <Grid Grid.Row="1" Grid.Column="0"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      ColumnDefinitions="*, *"
+                      RowDefinitions="25, *">
+                    <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                            BorderBrush="Black"
+                            BorderThickness="0 0 1 1">
+                        <Label Content="Tanulói statisztika"
+                               HorizontalAlignment="Stretch"
+                               HorizontalContentAlignment="Center"
+                               VerticalAlignment="Stretch"
+                               VerticalContentAlignment="Center"/>
+                    </Border>
+                    <Grid Grid.Column="0" Grid.Row="1"
+                          Grid.ColumnDefinitions="*, *">
+                        <StackPanel Grid.Column="0"
+                                    Orientation="Vertical">
+                            <Label Content="Alkalmak száma:"/>
+                            <Label Content="Órák száma:"/>
+                            <Label Content="Göngyölt km:"/>
+                            <Label Content="Göngyölt perc:"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Vertical">
+                            <Label Content="{Binding TempLesson.OccasionCount}"/>
+                            <Label Content="{Binding TempLesson.PreviousLessonCount}"/>
+                            <Label Content="{Binding TempLesson.AllKm}"/>
+                            <Label Content="{Binding TempLesson.AllDrivenMinutes}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Border Grid.Column="1" Grid.Row="1"
+                            BorderBrush="Black"
+                            BorderThickness="1 0 1 0">
+                        <Grid Grid.ColumnDefinitions="*, *">
+                            <StackPanel Grid.Column="0"
+                                        Orientation="Vertical">
+                                <Label Content="'A' jellegű órák száma:"/>
+                                <Label Content="'F/v' jellegű órák száma:"/>
+                                <Label Content="'F/o' jellegű órák száma:"/>
+                                <Label Content="'F/é' jellegű órák száma:"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Vertical">
+                                <Label Content="{Binding TempLesson.CurrentStudent.ALessonCount}"/>
+                                <Label Content="{Binding TempLesson.CurrentStudent.FvLessonCount}"/>
+                                <Label Content="{Binding TempLesson.CurrentStudent.FoLessonCount}"/>
+                                <Label Content="{Binding TempLesson.CurrentStudent.FeLessonCount}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid><!-- Tanulói statisztika rész -->
             </Grid>
         </TabItem>
         <TabItem Header="KVAR kezelés">
