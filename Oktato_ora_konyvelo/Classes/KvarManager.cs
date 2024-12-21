@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,17 +12,18 @@ namespace Oktato_ora_konyvelo.Classes;
 public class KvarManager
 {
     private ChromeDriver driver { get; set; }
+    private IDictionary<string, IWebElement> NavBarButtons { get; set; }
     private string KvarUser { get; set; }
     private string KvarPwd { get; set; }
     
-    public void ReadCredentials()
+    private void ReadCredentials()
     {
         string creds = File.ReadAllText("./creds.txt", Encoding.Default);//Bejelentkezési adatok helye
         KvarUser = creds.Split(';')[0];//Felh. név
         KvarPwd = creds.Split(';')[1];//Jelszó
     }
 
-    public Task Login()
+    private void Login()
     {
         driver.Navigate().GoToUrl(@"https://ekapuauth.kavk.hu/Szakoktato");
 
@@ -37,12 +39,21 @@ public class KvarManager
         {
             PollingInterval = TimeSpan.FromMilliseconds(200),//0,2 másodpercenként nézd az oldal változásait
         };
-        wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException), typeof(NoSuchElementException));//Nem baj, ha nem megnyomható a gomb, vagy nem látszik a kijelentkezés, próbáld
+        wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(ElementNotInteractableException));//Nem baj, ha nem megnyomható a gomb, vagy nem látszik a kijelentkezés, próbáld
 
         wait.Until(x =>
         {
             LoginButton.Click(); //Gomb megnyomási próbálkozás
-            driver.FindElement(By.Id("logout"));//Ha exception-t dob (nincs még ilyen, akkor újrapróbálkozás)
+            
+            try
+            {
+                driver.FindElement(By.Id("logout")); //Ha exception-t dob 
+            }
+            catch (Exception e)
+            {
+                return false;//nincs még ilyen, akkor újrapróbálkozás
+            }
+            
             return true;//Ha látszik a kijelentkezés gomb, akkor kilépés
         });
         
@@ -51,26 +62,47 @@ public class KvarManager
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(300));//Várj max 5 percet, amíg a kétlépcsős bejelentkezés sikerül
         wait.Until(x =>
         {
-            if (x.Url.Equals(@"https://kokeny.kavk.hu/szakoktato"))//Ha ez a jelenlegi url
-            {
-                return true;//Siker
-            }
+            if (x.Url.Equals(@"https://kokeny.kavk.hu/szakoktato")) return true;//Ha ez a jelenlegi url, siker
 
             return false;//Újra
         });
-        
-        return Task.CompletedTask;//Login siker
     }
 
-    public KvarManager()
+    private void InitDriver()
     {
-        ReadCredentials();
-        
         ChromeOptions options = new();
         options.AddArgument("--start-maximized");//Fullscreen legyen
         options.LeaveBrowserRunning = false;//Bezáródjon a programmal együtt
         options.PageLoadStrategy = PageLoadStrategy.Normal;//Várd meg amíg teljesen betölt az oldal
         
         driver = new ChromeDriver(options);
+    }
+
+    private void GetLocationsAndVehicles()
+    {
+        
+    }
+
+    private void ChangePage(string changeTo)
+    {
+        switch (changeTo)//TODO: Linkekkel mozogni az oldalon
+        {
+            default:
+                break;
+        }
+    }
+
+    public void Start()
+    {
+        ReadCredentials();
+        
+        Login();
+        GetLocationsAndVehicles();
+    }
+
+    public KvarManager()
+    {
+        InitDriver();
+        NavBarButtons = new Dictionary<string, IWebElement>();
     }
 }

@@ -49,7 +49,7 @@ namespace Oktato_ora_konyvelo.ViewModels
         [RelayCommand]
         public void LoginToKvar()
         {
-            Task.Run(()=> KvarManager.Login());
+            KvarManager.Start();
         }
         
         #endregion
