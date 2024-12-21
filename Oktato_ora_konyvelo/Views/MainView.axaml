@@ -52,7 +52,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <TabControl TabStripPlacement="Top"
-                SelectedIndex="2"
+                SelectedIndex="3"
                 Padding="0"><!--Ez az érték debugolásra van.-->
         <TabItem Header="Összes óra">
             <DockPanel Grid.IsSharedSizeScope="True">
@@ -734,7 +734,12 @@
             </Grid>
         </TabItem>
         <TabItem Header="KVAR kezelés">
-
+            <DockPanel HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch">
+                <Button Content="Bejelentkezés" 
+                        Command="{Binding LoginToKvar}"
+                        DockPanel.Dock="Top"/>
+            </DockPanel>
         </TabItem>
     </TabControl>
 </UserControl>

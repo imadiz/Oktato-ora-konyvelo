@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using Oktato_ora_konyvelo.ViewModels;
 
 namespace Oktato_ora_konyvelo.ViewModels
@@ -39,8 +42,16 @@ namespace Oktato_ora_konyvelo.ViewModels
 
         [ObservableProperty] List<string> recordLessonCbxOptions = new(){ "Alap", "Városi", "Országúti", "Éjszakai" };
         
-        [ObservableProperty]
-        Settings allSettings = new("18519", "");
+        private KvarManager KvarManager = new();
+        #endregion
+        
+        #region Commands
+        [RelayCommand]
+        public void LoginToKvar()
+        {
+            Task.Run(()=> KvarManager.Login());
+        }
+        
         #endregion
 
         #region Manage files
