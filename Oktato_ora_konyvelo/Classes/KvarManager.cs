@@ -62,7 +62,7 @@ public class KvarManager
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(300));//Várj max 5 percet, amíg a kétlépcsős bejelentkezés sikerül
         wait.Until(x =>
         {
-            if (x.Url.Equals(@"https://kokeny.kavk.hu/szakoktato")) return true;//Ha ez a jelenlegi url, siker
+            if (x.Url.Equals(@"https://kokeny.kavk.hu/Szakoktato")) return true;//Ha ez a jelenlegi url, siker
 
             return false;//Újra
         });
@@ -85,8 +85,21 @@ public class KvarManager
 
     private void ChangePage(string changeTo)
     {
+        string baseurl = @"https://kokeny.kavk.hu/Szakoktato";
         switch (changeTo)//TODO: Linkekkel mozogni az oldalon
         {
+            case "VezetesiKarton":
+                driver.Navigate().GoToUrl($@"{baseurl}/VezetesiKarton");
+                break;
+            case "GyakorlatiOra":
+                driver.Navigate().GoToUrl($@"{baseurl}/GyakorlatiOra");
+                break;
+            case "Helyszin":
+                driver.Navigate().GoToUrl($@"{baseurl}/Helyszin");
+                break;
+            case "Jarmu":
+                driver.Navigate().GoToUrl($@"{baseurl}/Jarmu");
+                break;
             default:
                 break;
         }

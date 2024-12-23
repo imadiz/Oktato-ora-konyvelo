@@ -80,7 +80,7 @@ namespace Oktato_ora_konyvelo.Classes
                 KVARStatus = "Nincs rögzítve";
             }
         }
-        public Student(string nameAndId, ObservableCollection<Lesson> alllessons)
+        public Student(string nameAndId/*TODO: Lecserélni, nem így van a KVAR-ban!*/, ObservableCollection<Lesson> alllessons)
         {
             NameAndId = nameAndId;
 
