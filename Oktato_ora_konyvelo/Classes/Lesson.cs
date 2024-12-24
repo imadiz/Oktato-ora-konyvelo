@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia.OpenGL.Surfaces;
 using Oktato_ora_konyvelo.ViewModels;
 
 namespace Oktato_ora_konyvelo.Classes
@@ -26,7 +27,6 @@ namespace Oktato_ora_konyvelo.Classes
         [ObservableProperty] private int drivenKm;
         [ObservableProperty] private int allKm;
         [ObservableProperty] private bool isRecordedInKVAR;
-        private bool isFirstLesson;
 
         private ObservableCollection<Lesson> PreviousLessons = [];
         private ObservableCollection<Lesson> AllLessons;
@@ -40,8 +40,7 @@ namespace Oktato_ora_konyvelo.Classes
                       int drivenKm,
                       bool isRecordedInKvar,
                       ObservableCollection<Lesson> allLessons,
-                      bool firstLesson = false,
-                      int meterAtStart = 0)
+                      int meterAtStart)
         {
             Date = date;
             StartTime = start;
@@ -52,22 +51,13 @@ namespace Oktato_ora_konyvelo.Classes
             EndPlace = endPlace;
             DrivenKm = drivenKm;
             IsRecordedInKVAR = isRecordedInKvar;
-            isFirstLesson = firstLesson;
             AllLessons = allLessons;
-
-            if (!isFirstLesson)
-            {//Ha nem az első óra
-                GetCurrentStudentPreviousLessons(allLessons);
-                UpdateData();
-            }
-            else//Ha az első óra
-            {
-                DrivenMinutes = Convert.ToInt32((EndTime - StartTime).TotalMinutes);
-                AllDrivenMinutes = DrivenMinutes;
-                MeterAtStart = meterAtStart;
-                MeterAtEnd = MeterAtStart/*TODO: Kicserélni a settings-ben eltárolt értékre!*/ + DrivenKm;
-                AllKm = DrivenKm;
-            }
+            
+            DrivenMinutes = Convert.ToInt32((EndTime - StartTime).TotalMinutes);
+            AllDrivenMinutes = DrivenMinutes;
+            MeterAtStart = meterAtStart;
+            MeterAtEnd = MeterAtStart/*TODO: Kicserélni a settings-ben eltárolt értékre!*/ + DrivenKm;
+            AllKm = DrivenKm;
         }
         public void GetCurrentStudentPreviousLessons(ObservableCollection<Lesson> AllLessons)
         {
@@ -76,13 +66,17 @@ namespace Oktato_ora_konyvelo.Classes
                 PreviousLessons.Add(item);
             }
 
-            PreviousLessons = new ObservableCollection<Lesson>(PreviousLessons.OrderBy(x=>x.Date).OrderBy(x=>x.StartTime));//Rendezés dátum és idő szerint
+            foreach (Lesson item in AllLessons.Where(x=>x.Date.Equals(Date) && x.StartTime >= EndTime))//Ha a mai napon van és későbbi óra ennél
+            {
+                PreviousLessons.Remove(item);//Törlés
+            }
+
+            PreviousLessons = new ObservableCollection<Lesson>(PreviousLessons.OrderBy(x=>x.Date).ThenBy(x=>x.StartTime));//Rendezés dátum és idő szerint
         }
         public void UpdateData()
         {
             DrivenMinutes = Convert.ToInt32((EndTime - StartTime).TotalMinutes);
             AllDrivenMinutes = PreviousLessons.Sum(x => x.DrivenMinutes) + DrivenMinutes;
-            MeterAtStart = isFirstLesson ? 0 : AllLessons.OrderBy(x => x.Date).ThenBy(x => x.StartTime).Last().MeterAtEnd;
             MeterAtEnd = MeterAtStart + DrivenKm;
             AllKm = PreviousLessons.Sum(x => x.DrivenKm) + DrivenKm;
         }

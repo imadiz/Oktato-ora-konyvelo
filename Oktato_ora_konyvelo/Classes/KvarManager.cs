@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,13 @@ namespace Oktato_ora_konyvelo.Classes;
 
 public class KvarManager
 {
+    private enum Pages
+    {
+        VezetesiKarton,
+        GyakorlatiOra,
+        Helyszin,
+        Jarmu
+    }
     private ChromeDriver driver { get; set; }
     private IDictionary<string, IWebElement> NavBarButtons { get; set; }
     private string KvarUser { get; set; }
@@ -62,7 +70,7 @@ public class KvarManager
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(300));//Várj max 5 percet, amíg a kétlépcsős bejelentkezés sikerül
         wait.Until(x =>
         {
-            if (x.Url.Equals(@"https://kokeny.kavk.hu/Szakoktato")) return true;//Ha ez a jelenlegi url, siker
+            if (x.Url.Equals(@"https://kokeny.kavk.hu/szakoktato")) return true;//Ha ez a jelenlegi url, siker
 
             return false;//Újra
         });
@@ -78,31 +86,67 @@ public class KvarManager
         driver = new ChromeDriver(options);
     }
 
-    private void GetLocationsAndVehicles()
+    public IList<Place> GetLocations()
     {
+        ChangePage(Pages.Helyszin);
+        IList<Place> Places = [];
+
+        IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div[1]/div[2]/table"));//Helyek table
+        IList<IWebElement> rows = table.FindElements(By.TagName("tr"));//Sorok
+
+        foreach (IWebElement row in rows)//Végiglépkedés a sorokon
+        {
+            IList<IWebElement> cells = row.FindElements(By.TagName("td"));//Sorok cellái
+            Places.Add(new Place(cells[0].Text,//Hely neve
+                cells[1].FindElement(By.TagName("i"))//Indulási helyszín-e
+                    .GetDomAttribute("oldTitle")
+                    .Equals("Igen")//Ha igen a tooltip (ha a kurzor felette van, igennel jelez amikor be van pipálva, de valamiért oldTitle a tulajdonság neve (???))
+                    ? true
+                    : false,
+                cells[2].FindElement(By.TagName("i"))//Érkezési helyszín-e
+                    .GetDomAttribute("oldTitle")
+                    .Equals("Igen")
+                    ? true
+                    : false,
+                cells[3].Text));//Hely címe
+        }
+        return Places;
+    }
+
+    public IList<Vehicle> GetVehicles()
+    {
+        ChangePage(Pages.Jarmu);
+        IList<Vehicle> Vehicles = [];
+
+        IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div[1]/div[2]/table"));//Járművek table
+        IList<IWebElement> rows = table.FindElements(By.TagName("tr"));//Sorok
+
+        foreach (IWebElement row in rows)//Végiglépkedés a sorokon
+        {
+            IList<IWebElement> cells = row.FindElements(By.TagName("td"));//Sorok cellái
+            Vehicles.Add(new Vehicle(cells[0].Text/*Rendszám*/, Vehicle.VehicleCategory.B/*Kategória*/, false/*Vontathat-e*/));//TODO: Megcsinálni rendesen, jelenleg csak tesztelésre!
+        }
+        
+        return Vehicles;
+    }
+
+    private void GetAllLessons()
+    {
+        ChangePage(Pages.VezetesiKarton);
+
+        IWebElement SearchBtn = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/form/div/div/div[2]/div[3]/button[2]"));//Szűrés gomb (összes adatot megjeleníti paraméterek nélkül)
+        
+        SearchBtn.Click();//Tanulói adatok frissítése
+
+        IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div/div[2]/table"));//Tanulók table
+        
         
     }
 
-    private void ChangePage(string changeTo)
+    private void ChangePage(Pages changeTo)
     {
         string baseurl = @"https://kokeny.kavk.hu/Szakoktato";
-        switch (changeTo)//TODO: Linkekkel mozogni az oldalon
-        {
-            case "VezetesiKarton":
-                driver.Navigate().GoToUrl($@"{baseurl}/VezetesiKarton");
-                break;
-            case "GyakorlatiOra":
-                driver.Navigate().GoToUrl($@"{baseurl}/GyakorlatiOra");
-                break;
-            case "Helyszin":
-                driver.Navigate().GoToUrl($@"{baseurl}/Helyszin");
-                break;
-            case "Jarmu":
-                driver.Navigate().GoToUrl($@"{baseurl}/Jarmu");
-                break;
-            default:
-                break;
-        }
+        driver.Navigate().GoToUrl($@"{baseurl}/{Enum.GetName(changeTo)}");
     }
 
     public void Start()
@@ -110,7 +154,8 @@ public class KvarManager
         ReadCredentials();
         
         Login();
-        GetLocationsAndVehicles();
+        GetLocations();
+        GetVehicles();
     }
 
     public KvarManager()

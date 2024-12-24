@@ -102,18 +102,25 @@ namespace Oktato_ora_konyvelo.Classes
             }
         }
 
-        private string? startPlace;
-        public string? StartPlace
+        private Place? startPlace;
+        public Place? StartPlace
         {
             get => startPlace;
             set => SetProperty(ref startPlace, value);
         }
 
-        private string? endPlace;
-        public string? EndPlace
+        private Place? endPlace;
+        public Place? EndPlace
         {
             get => endPlace;
             set => SetProperty(ref endPlace, value);
+        }
+
+        private Vehicle? usedVehicle;
+        public Vehicle? UsedVehicle
+        {
+            get => usedVehicle;
+            set => SetProperty(ref usedVehicle, value);
         }
 
         private int meterAtStart;

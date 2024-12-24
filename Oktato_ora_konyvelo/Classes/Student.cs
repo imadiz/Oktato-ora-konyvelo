@@ -80,15 +80,13 @@ namespace Oktato_ora_konyvelo.Classes
                 KVARStatus = "Nincs rögzítve";
             }
         }
-        public Student(string nameAndId/*TODO: Lecserélni, nem így van a KVAR-ban!*/, ObservableCollection<Lesson> alllessons)
+        public Student(string name/*Név*/, string id/*Karton azon.*/, ObservableCollection<Lesson> alllessons)
         {
-            NameAndId = nameAndId;
+            NameAndId = $"{name} ({id})";
 
-            DisplayName = nameAndId[..nameAndId.IndexOf(" (")].Trim();
-            Id = new string(nameAndId[nameAndId.IndexOf(" (")..].Where(char.IsNumber).ToArray());
+            DisplayName = name;
+            Id = id;
             AllLessons = alllessons;
-
-            UpdateData();
         }
     }
 }

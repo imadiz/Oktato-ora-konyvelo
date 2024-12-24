@@ -25,22 +25,37 @@ namespace Oktato_ora_konyvelo.ViewModels
 
         #region Lessons
 
-        [ObservableProperty] ObservableCollection<Lesson> allLessons = new();
+        [ObservableProperty] ObservableCollection<Lesson> allLessons = [];
 
-        [ObservableProperty] ObservableCollection<Student> allStudents = new();
+        [ObservableProperty] ObservableCollection<Student> allStudents = [];
 
         [ObservableProperty] ToBeAddedLesson tempLesson;
 
         #endregion
         
         #region Places, Vehicles
-        [ObservableProperty] ObservableCollection<string> vehicles = new(){"LWC256", "SPT867"};
-        
-        [ObservableProperty] ObservableCollection<Place> allPlaces = new();
+        [ObservableProperty] ObservableCollection<string> vehicles =
+        [
+            "LWC256",
+            "SPT867"
+        ];
+
+        [ObservableProperty] private ObservableCollection<Place> allPlaces =
+        [
+            new Place("Autósiskola", true, true, "Miklós Jakab suli"),
+            new Place("Első érkezési helyszín", false, true, "321 Xyz utca 123"),
+            new Place("Első indulási helyszín", true, false, "123 Abc utca 321")
+        ];
         
         #endregion
 
-        [ObservableProperty] List<string> recordLessonCbxOptions = new(){ "Alap", "Városi", "Országúti", "Éjszakai" };
+        [ObservableProperty] List<string> recordLessonCbxOptions = 
+        [
+            "Alap",
+            "Városi",
+            "Országúti",
+            "Éjszakai"
+        ];
         
         private KvarManager KvarManager = new();
         #endregion
@@ -67,8 +82,8 @@ namespace Oktato_ora_konyvelo.ViewModels
         
         public void AddTestData()
         {
-            AllStudents.Add(new Student("Teszt Elek (12345678)", AllLessons));
-            AllStudents.Add(new Student("Michael Myers (87654321)", AllLessons));
+            AllStudents.Add(new Student("Teszt Elek", "12345678", AllLessons));
+            AllStudents.Add(new Student("Michael Myers", "87654321", AllLessons));
 
             AllLessons.CollectionChanged += AllLessons_CollectionChanged;
 
@@ -82,7 +97,6 @@ namespace Oktato_ora_konyvelo.ViewModels
                 18,
                 false,
                 AllLessons,
-                true,
                 522535));
 
             AllLessons.Add(new Lesson(new DateOnly(2024, 09, 03),
@@ -95,11 +109,7 @@ namespace Oktato_ora_konyvelo.ViewModels
                 81,
                 true,
                 AllLessons,
-                false));
-            
-            AllPlaces.Add(new Place("Autósiskola", true, true, "Miklós Jakab suli"));
-            AllPlaces.Add(new Place("Első indulási helyszín", true, false, "123 Abc utca 321"));
-            AllPlaces.Add(new Place("Első érkezési helyszín", false, true, "321 Zyx utca 123"));
+                AllLessons.Last().MeterAtEnd));
         }
 
         #region Tanuló adatok frissítése
