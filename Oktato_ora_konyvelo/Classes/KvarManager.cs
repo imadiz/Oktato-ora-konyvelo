@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Oktato_ora_konyvelo.ViewModels;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -130,17 +132,109 @@ public class KvarManager
         return Vehicles;
     }
 
-    private void GetAllLessons()
+    private IList<Student> GetAllStudents(ObservableCollection<Lesson> allLessons)
     {
-        ChangePage(Pages.VezetesiKarton);
+        IList<Student> AllStudents = []; //Kigyűjtött tanulók
+        
+        ChangePage(Pages.VezetesiKarton); //Lapváltás a Vezetési kartonokra
 
         IWebElement SearchBtn = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/form/div/div/div[2]/div[3]/button[2]"));//Szűrés gomb (összes adatot megjeleníti paraméterek nélkül)
         
         SearchBtn.Click();//Tanulói adatok frissítése
 
         IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div/div[2]/table"));//Tanulók table
+
+        foreach (IWebDriver row in table.FindElements(By.TagName("tr"))) //Végiglépkedés a tanulók listáján
+        {
+            //A tanuló neve és kartonazonosítójával létrehozásra kerül egy új Student példány
+            AllStudents.Add(new Student(row.FindElement(By.XPath("td[1]")).Text, row.FindElement(By.XPath("td[5]")).Text, allLessons));
+        }
+
+        return AllStudents;
+    }
+    private IList<Lesson> GetAllLessons(ObservableCollection<Student> allStudents)
+    {
+        IList<Lesson> allLessons = []; //Kigyűjtött órák
         
+        ChangePage(Pages.VezetesiKarton);
+
+        IWebElement SearchBtn = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/form/div/div/div[2]/div[3]/button[2]")); //Szűrés gomb (összes adatot megjeleníti paraméterek nélkül)
         
+        SearchBtn.Click(); //Tanulói adatok frissítése
+
+        IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div/div[2]/table")); //Tanulók table
+
+        Student? CurrentStudent = null; //Adatgyűjtés során a jelen tanuló
+        
+        IWebElement? StudentButton = null; //A tanuló során az alkalmakra megjelenítésére szóló gomb
+        
+        IWebElement? LessonButton = null; //Az alkalom során a részletes adatok megjelenítésére szolgáló gomb
+        IWebElement? LessonsTable = null; //Tanuló alkalmak table
+        IWebElement? LessonForm = null; //Részletes alkalom adatok form a megnyíló modal-on 
+        IWebElement? LessonFormCloseBtn = null; //A részletes adatok bezárási gombja
+
+        LessonType CurrentType = LessonType.A; //Jelen alkalom jellege
+
+        Dictionary<string, string> LessonModalFields = new(); //Részletes alkalom adatok elérési utak
+        LessonModalFields.Add("date", "div[1]/div[1]/div[2]/div/span"); //Dátum (2025. 01. 01)
+        LessonModalFields.Add("times", "div[1]/div[1]/div[3]/div/span"); //Alkalom kezdet/vég (08:00 - 09:40)
+        LessonModalFields.Add("type", "div[2]/div[1]/div[1]/div/span[1]/span/span[1]"); //Vezetés jellege (F/v, A)
+        LessonModalFields.Add("vehicle", "div[2]/div[1]/div[2]/div/span[1]/span/span[1]"); //Jármű rendszám (ABC123 (B))
+        LessonModalFields.Add("startplace", "div[1]/div[2]/div[3]/div/span"); //Indulási helyszín (Autósidkola)
+        LessonModalFields.Add("endplace", "div[1]/div[2]/div[4]/div/span"); //Érkezési helyszín (Autósidkola)
+        LessonModalFields.Add("startkm", "div[2]/div[2]/div[1]/div/div[1]/span[1]/input"); //Alkalom kezdeti kilóméteróra (530930)
+        LessonModalFields.Add("drivenkm", "div[2]/div[2]/div[2]/div/div[1]/div/span[1]/input"); //Alkalom befejezési kilóméteróra (530951)
+        LessonModalFields.Add("closebtn", "/html/body/div[1]/div[2]/div[1]/div/a[2]"); //Modal bezárás gomb
+
+        foreach (IWebDriver studentRow in table.FindElements(By.TagName("tr"))) //Végiglépkedés a tanulók listáján
+        {
+            CurrentStudent = allStudents.First(x => x.Id.Equals(studentRow.FindElement(By.XPath("td[5]")).Text)); //Jelen tanuló lokális megkeresése karton azonosító alapján
+            
+            StudentButton = studentRow.FindElement(By.XPath("td[9]/a")); //Alkalmak gomb megkeresése
+            StudentButton.Click(); //Gomb megnyomása
+            
+            LessonsTable = driver.FindElement(By.XPath("/html/body/div[2]/div[2]/div/div[1]/div[3]/div[2]/table")); //Alkalmak table megkeresése
+            
+            foreach (IWebElement lessonRow in LessonsTable.FindElements(By.TagName("tr")))
+            {
+                LessonButton = lessonRow.FindElement(By.XPath("td[6]/a")); //Részl. adatok gomb megkeresése
+                LessonButton.Click(); //Gomb megnyomása
+                
+                LessonForm = driver.FindElement(By.XPath("/html/body/div[1]/div[2]/div[2]/form")); //Részl. adatok form (modal-on)
+
+                #region Alkalom jelleg eldöntés
+                switch (LessonForm.FindElement(By.XPath(LessonModalFields["type"])).Text)
+                {
+                    case "A":
+                        CurrentType = LessonType.A;
+                        break;
+                    case "F/v":
+                        CurrentType = LessonType.Fv;
+                        break;
+                    case "F/o":
+                        CurrentType = LessonType.Fo;
+                        break;
+                    case "F/é":
+                        CurrentType = LessonType.Fe;
+                        break;
+                }
+                #endregion
+                
+                allLessons.Add(new Lesson(
+                    DateOnly.Parse(LessonForm.FindElement(By.XPath(LessonModalFields["date"])).Text),
+                    TimeOnly.Parse(""),
+                    TimeOnly.Parse(""),
+                    CurrentStudent,
+                    CurrentType,
+                    LessonForm.FindElement(By.XPath(LessonModalFields["startplace"])).Text,
+                    LessonForm.FindElement(By.XPath(LessonModalFields["endplace"])).Text,
+                    Convert.ToInt32(LessonForm.FindElement(By.XPath(LessonModalFields["drivenkm"])).Text),
+                    true,
+                    Convert.ToInt32(LessonForm.FindElement(By.XPath(LessonModalFields["startkm"])).Text)));
+            }
+        }
+
+        return allLessons;
     }
 
     private void ChangePage(Pages changeTo)

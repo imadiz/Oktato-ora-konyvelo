@@ -13,23 +13,22 @@ namespace Oktato_ora_konyvelo.Classes
 {
     public partial class Lesson : ObservableObject
     {
-        [ObservableProperty] private DateOnly date;
-        [ObservableProperty] private TimeOnly startTime;
-        [ObservableProperty] private TimeOnly endTime;
-        [ObservableProperty] private int drivenMinutes;
-        [ObservableProperty] private int allDrivenMinutes;
-        [ObservableProperty] private Student student;
-        [ObservableProperty] private LessonType type;
-        [ObservableProperty] private string startPlace;
-        [ObservableProperty] private string endPlace;
-        [ObservableProperty] private int meterAtStart;
-        [ObservableProperty] private int meterAtEnd;
-        [ObservableProperty] private int drivenKm;
-        [ObservableProperty] private int allKm;
-        [ObservableProperty] private bool isRecordedInKVAR;
+        [ObservableProperty] private DateOnly date; //Dátum
+        [ObservableProperty] private TimeOnly startTime; //Kezdő időpont
+        [ObservableProperty] private TimeOnly endTime; //Befejezési időpont
+        [ObservableProperty] private int drivenMinutes; //Az alkalmon vezetett percek száma
+        [ObservableProperty] private int allDrivenMinutes; //Eddig az összes alkalmakon vezetett percek száma
+        [ObservableProperty] private Student student; //Tanuló, aki részt vett az órán
+        [ObservableProperty] private LessonType type; //Óra jellege
+        [ObservableProperty] private string startPlace; //Kezdő helyszín
+        [ObservableProperty] private string endPlace; //Befejezési helyszín
+        [ObservableProperty] private int meterAtStart; //Kilóméteróra állás az alkalom elején
+        [ObservableProperty] private int meterAtEnd; //Kilóméteróra állás az alkalom végén
+        [ObservableProperty] private int drivenKm; //Az alkalom alatt vezetett út hossza
+        [ObservableProperty] private int allKm; //Eddig az összes alkalmakon vezetett út hossza
+        [ObservableProperty] private bool isRecordedInKVAR; //Rögzítve van-e az óra a KVAR rendszerben
 
-        private ObservableCollection<Lesson> PreviousLessons = [];
-        private ObservableCollection<Lesson> AllLessons;
+        private ObservableCollection<Lesson> PreviousLessons = []; //Az eddigi órák listája
         public Lesson(DateOnly date,
                       TimeOnly start,
                       TimeOnly end,
@@ -39,7 +38,6 @@ namespace Oktato_ora_konyvelo.Classes
                       string endPlace,
                       int drivenKm,
                       bool isRecordedInKvar,
-                      ObservableCollection<Lesson> allLessons,
                       int meterAtStart)
         {
             Date = date;
@@ -51,7 +49,6 @@ namespace Oktato_ora_konyvelo.Classes
             EndPlace = endPlace;
             DrivenKm = drivenKm;
             IsRecordedInKVAR = isRecordedInKvar;
-            AllLessons = allLessons;
             
             DrivenMinutes = Convert.ToInt32((EndTime - StartTime).TotalMinutes);
             AllDrivenMinutes = DrivenMinutes;
@@ -63,7 +60,7 @@ namespace Oktato_ora_konyvelo.Classes
         {
             foreach (Lesson item in AllLessons.Where(x => x.Student.Id.Equals(Student.Id)).Where(x => x.Date <= Date))//Jelen tanuló összes órája
             {
-                PreviousLessons.Add(item);
+                PreviousLessons.Add(item); //Eddigi órákhoz adás
             }
 
             foreach (Lesson item in AllLessons.Where(x=>x.Date.Equals(Date) && x.StartTime >= EndTime))//Ha a mai napon van és későbbi óra ennél
@@ -75,10 +72,10 @@ namespace Oktato_ora_konyvelo.Classes
         }
         public void UpdateData()
         {
-            DrivenMinutes = Convert.ToInt32((EndTime - StartTime).TotalMinutes);
-            AllDrivenMinutes = PreviousLessons.Sum(x => x.DrivenMinutes) + DrivenMinutes;
-            MeterAtEnd = MeterAtStart + DrivenKm;
-            AllKm = PreviousLessons.Sum(x => x.DrivenKm) + DrivenKm;
+            DrivenMinutes = Convert.ToInt32((EndTime - StartTime).TotalMinutes); //Az alkalmon vezetett idő (Befejezési időpont - Kezdeti időpont)
+            AllDrivenMinutes = PreviousLessons.Sum(x => x.DrivenMinutes) + DrivenMinutes; //Az eddig összes vezetett percek száma (Az eddigi alkalmakon vezetett percek + A jelen alkalom időtartama)
+            MeterAtEnd = MeterAtStart + DrivenKm; //A kilóméteróraállás az alkalom végén (A kmóraállás az óra elején + a vezetett km)
+            AllKm = PreviousLessons.Sum(x => x.DrivenKm) + DrivenKm; //Az eddig vezetett összes úthossz (Az eddigi alkalmakon levezetett úthossz + a jelen alkalom vezetett hossza)
         }
     }
 }

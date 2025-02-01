@@ -12,7 +12,7 @@ using Oktato_ora_konyvelo.ViewModels;
 
 namespace Oktato_ora_konyvelo.ViewModels
 {
-    public enum LessonType
+    public enum LessonType //Óra jellegek
     {
         A,
         Fv,
@@ -25,11 +25,11 @@ namespace Oktato_ora_konyvelo.ViewModels
 
         #region Lessons
 
-        [ObservableProperty] ObservableCollection<Lesson> allLessons = [];
+        [ObservableProperty] ObservableCollection<Lesson> allLessons = []; //Összes alkalom
 
-        [ObservableProperty] ObservableCollection<Student> allStudents = [];
+        [ObservableProperty] ObservableCollection<Student> allStudents = []; //Összes tanuló
 
-        [ObservableProperty] ToBeAddedLesson tempLesson;
+        [ObservableProperty] ToBeAddedLesson tempLesson; //Hozzáadni kívánt óra
 
         #endregion
         
@@ -38,14 +38,14 @@ namespace Oktato_ora_konyvelo.ViewModels
         [
             "LWC256",
             "SPT867"
-        ];
+        ]; //Mentett járművek
 
         [ObservableProperty] private ObservableCollection<Place> allPlaces =
         [
             new Place("Autósiskola", true, true, "Miklós Jakab suli"),
             new Place("Első érkezési helyszín", false, true, "321 Xyz utca 123"),
             new Place("Első indulási helyszín", true, false, "123 Abc utca 321")
-        ];
+        ]; //Mentett helyszínek
         
         #endregion
 
@@ -55,29 +55,18 @@ namespace Oktato_ora_konyvelo.ViewModels
             "Városi",
             "Országúti",
             "Éjszakai"
-        ];
+        ]; //Óra jelleg UI-ra (ezeket lehet kiválasztani a ComboBox-ból)
         
         private KvarManager KvarManager = new();
         #endregion
         
         #region Commands
         [RelayCommand]
-        public void LoginToKvar()
+        public void LoginToKvar() //KVAR bejelentkezés command
         {
-            KvarManager.Start();
+            KvarManager.Start(); //Bejelentkezés command
         }
         
-        #endregion
-
-        #region Manage files
-        public void ReadAllData()
-        {
-
-        }
-        public void SaveAllData()
-        {
-
-        }
         #endregion
         
         public void AddTestData()
@@ -96,7 +85,6 @@ namespace Oktato_ora_konyvelo.ViewModels
                 "Autósiskola",
                 18,
                 false,
-                AllLessons,
                 522535));
 
             AllLessons.Add(new Lesson(new DateOnly(2024, 09, 03),
@@ -108,8 +96,8 @@ namespace Oktato_ora_konyvelo.ViewModels
                 "Autósiskola",
                 81,
                 true,
-                AllLessons,
                 AllLessons.Last().MeterAtEnd));
+            
         }
 
         #region Tanuló adatok frissítése
