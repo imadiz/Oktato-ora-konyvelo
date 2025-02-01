@@ -45,9 +45,9 @@ public class KvarManager
         
         //A wait.Until(...) újrakezdi a futását false visszatérésnél, és kilép a true-nál
         
-        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5))//Várj 2 másodpercet, amíg megnyomható lesz a login gomb
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5))//Várj x másodpercet, amíg megnyomható lesz a login gomb
         {
-            PollingInterval = TimeSpan.FromMilliseconds(200),//0,2 másodpercenként nézd az oldal változásait
+            PollingInterval = TimeSpan.FromMilliseconds(200) //0,2 másodpercenként nézd az oldal változásait
         };
         wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(ElementNotInteractableException));//Nem baj, ha nem megnyomható a gomb, vagy nem látszik a kijelentkezés, próbáld
 
@@ -67,8 +67,6 @@ public class KvarManager
             return true;//Ha látszik a kijelentkezés gomb, akkor kilépés
         });
         
-        
-
         wait = new WebDriverWait(driver, TimeSpan.FromSeconds(300));//Várj max 5 percet, amíg a kétlépcsős bejelentkezés sikerül
         wait.Until(x =>
         {
@@ -138,11 +136,33 @@ public class KvarManager
         
         ChangePage(Pages.VezetesiKarton); //Lapváltás a Vezetési kartonokra
 
-        IWebElement SearchBtn = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/form/div/div/div[2]/div[3]/button[2]"));//Szűrés gomb (összes adatot megjeleníti paraméterek nélkül)
+        IWebElement SearchBtn = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/form/div/div/div[2]/div[3]/button[2]")); //Szűrés gomb (összes adatot megjeleníti paraméterek nélkül)
         
         SearchBtn.Click();//Tanulói adatok frissítése
+        
+        IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div/div[2]/table")); //Tanulók table
 
-        IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div/div[2]/table"));//Tanulók table
+        #region Várakozás a table betöltésére
+        WebDriverWait WaitForStudents = new WebDriverWait(driver, TimeSpan.FromSeconds(10)) //Várj max x másodpercet
+        {
+            PollingInterval = TimeSpan.FromMilliseconds(200) //0,2 másodpercenként nézd az oldal változásait
+        };
+        
+        WaitForStudents.IgnoreExceptionTypes(typeof(NoSuchElementException));
+
+        WaitForStudents.Until(x =>
+        {
+            try
+            {
+                table.FindElements(By.TagName("tr")); //Keresd a tanulók table sorait
+                return true; //Megvan, kilépés
+            }
+            catch (Exception e) //Ha nincsenek meg
+            {
+                return false; //Újra
+            }
+        });
+        #endregion
 
         foreach (IWebDriver row in table.FindElements(By.TagName("tr"))) //Végiglépkedés a tanulók listáján
         {
@@ -156,49 +176,85 @@ public class KvarManager
     {
         IList<Lesson> allLessons = []; //Kigyűjtött órák
         
-        ChangePage(Pages.VezetesiKarton);
+        ChangePage(Pages.VezetesiKarton); //Vezetési karton oldalra váltás
 
+        #region Gombok, Útvonalak
         IWebElement SearchBtn = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/form/div/div/div[2]/div[3]/button[2]")); //Szűrés gomb (összes adatot megjeleníti paraméterek nélkül)
-        
-        SearchBtn.Click(); //Tanulói adatok frissítése
 
         IWebElement table = driver.FindElement(By.XPath(@"/html/body/div[2]/div[2]/div/div[1]/div/div[2]/table")); //Tanulók table
 
         Student? CurrentStudent = null; //Adatgyűjtés során a jelen tanuló
         
-        IWebElement? StudentButton = null; //A tanuló során az alkalmakra megjelenítésére szóló gomb
+        IWebElement? StudentBtn = null; //A tanuló során az alkalmakra megjelenítésére szóló gomb
         
-        IWebElement? LessonButton = null; //Az alkalom során a részletes adatok megjelenítésére szolgáló gomb
+        IWebElement? LessonBtn = null; //Az alkalom során a részletes adatok megjelenítésére szolgáló gomb
         IWebElement? LessonsTable = null; //Tanuló alkalmak table
         IWebElement? LessonForm = null; //Részletes alkalom adatok form a megnyíló modal-on 
         IWebElement? LessonFormCloseBtn = null; //A részletes adatok bezárási gombja
 
-        LessonType CurrentType = LessonType.A; //Jelen alkalom jellege
+        LessonType CurrentType = LessonType.A; //Jelen alkalom jellege (Az A csak azért, hogy ne legyen null)
 
         Dictionary<string, string> LessonModalFields = new(); //Részletes alkalom adatok elérési utak
         LessonModalFields.Add("date", "div[1]/div[1]/div[2]/div/span"); //Dátum (2025. 01. 01)
         LessonModalFields.Add("times", "div[1]/div[1]/div[3]/div/span"); //Alkalom kezdet/vég (08:00 - 09:40)
         LessonModalFields.Add("type", "div[2]/div[1]/div[1]/div/span[1]/span/span[1]"); //Vezetés jellege (F/v, A)
         LessonModalFields.Add("vehicle", "div[2]/div[1]/div[2]/div/span[1]/span/span[1]"); //Jármű rendszám (ABC123 (B))
-        LessonModalFields.Add("startplace", "div[1]/div[2]/div[3]/div/span"); //Indulási helyszín (Autósidkola)
-        LessonModalFields.Add("endplace", "div[1]/div[2]/div[4]/div/span"); //Érkezési helyszín (Autósidkola)
+        LessonModalFields.Add("startplace", "div[1]/div[2]/div[3]/div/span"); //Indulási helyszín (Autósiskola)
+        LessonModalFields.Add("endplace", "div[1]/div[2]/div[4]/div/span"); //Érkezési helyszín (Autósiskola)
         LessonModalFields.Add("startkm", "div[2]/div[2]/div[1]/div/div[1]/span[1]/input"); //Alkalom kezdeti kilóméteróra (530930)
         LessonModalFields.Add("drivenkm", "div[2]/div[2]/div[2]/div/div[1]/div/span[1]/input"); //Alkalom befejezési kilóméteróra (530951)
         LessonModalFields.Add("closebtn", "/html/body/div[1]/div[2]/div[1]/div/a[2]"); //Modal bezárás gomb
+        #endregion
 
+        SearchBtn.Click(); //Tanulói adatok frissítése
+        
+        #region Várakozás a tanulók table betöltésére
+        WebDriverWait WaitForStudents = new WebDriverWait(driver, TimeSpan.FromSeconds(10)) //Várj max x másodpercet
+        {
+            PollingInterval = TimeSpan.FromMilliseconds(200) //0,2 másodpercenként nézd az oldal változásait
+        };
+        
+        WaitForStudents.IgnoreExceptionTypes(typeof(NoSuchElementException));
+
+        WaitForStudents.Until(x =>
+        {
+            try
+            {
+                table.FindElements(By.TagName("tr")); //Keresd a tanulók table sorait
+                return true; //Megvan, kilépés
+            }
+            catch (Exception e) //Ha nincsenek meg
+            {
+                return false; //Újra
+            }
+        });
+        #endregion
+        
         foreach (IWebDriver studentRow in table.FindElements(By.TagName("tr"))) //Végiglépkedés a tanulók listáján
         {
             CurrentStudent = allStudents.First(x => x.Id.Equals(studentRow.FindElement(By.XPath("td[5]")).Text)); //Jelen tanuló lokális megkeresése karton azonosító alapján
             
-            StudentButton = studentRow.FindElement(By.XPath("td[9]/a")); //Alkalmak gomb megkeresése
-            StudentButton.Click(); //Gomb megnyomása
+            StudentBtn = studentRow.FindElement(By.XPath("td[9]/a")); //Alkalmak gomb megkeresése
+            StudentBtn.Click(); //Gomb megnyomása
             
             LessonsTable = driver.FindElement(By.XPath("/html/body/div[2]/div[2]/div/div[1]/div[3]/div[2]/table")); //Alkalmak table megkeresése
             
-            foreach (IWebElement lessonRow in LessonsTable.FindElements(By.TagName("tr")))
+            #region Várakozás a tanuló alkalmainak betöltésére
+
+            WebDriverWait WaitForLessons = new WebDriverWait(driver, TimeSpan.FromSeconds(10)) //Várj max 10 másodpercet
             {
-                LessonButton = lessonRow.FindElement(By.XPath("td[6]/a")); //Részl. adatok gomb megkeresése
-                LessonButton.Click(); //Gomb megnyomása
+                PollingInterval = TimeSpan.FromMilliseconds(200) //0,2 másodpercenként nézd az oldal változásait
+            };
+            WaitForLessons.IgnoreExceptionTypes(typeof(NoSuchElementException)); //Ignoráld, ha nincs meg az element
+
+            //TODO: Ha nincsenek alkalmak, megjelenik egy div, ami erről tájékoztat. Ha vannak alkalmak, megjelennek a table sorai.
+            //El kell dönteni, hogy melyik, és kezelni kell, mind a kettő async töltődik.
+            #endregion
+            
+            foreach (IWebElement lessonRow in LessonsTable.FindElements(By.TagName("tr"))) //Végiglépkedés a tanuló alkalmain
+            {
+                LessonBtn = lessonRow.FindElement(By.XPath("td[6]/a")); //Részl. adatok gomb megkeresése
+                LessonBtn.Click(); //Gomb megnyomása
                 
                 LessonForm = driver.FindElement(By.XPath("/html/body/div[1]/div[2]/div[2]/form")); //Részl. adatok form (modal-on)
 
@@ -248,8 +304,6 @@ public class KvarManager
         ReadCredentials();
         
         Login();
-        GetLocations();
-        GetVehicles();
     }
 
     public KvarManager()
