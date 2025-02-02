@@ -62,9 +62,11 @@ namespace Oktato_ora_konyvelo.ViewModels
         
         #region Commands
         [RelayCommand]
-        public void LoginToKvar() //KVAR bejelentkezés command
+        public async void LoginToKvar() //KVAR bejelentkezés command
         {
-            KvarManager.Start(); //Bejelentkezés command
+            KvarManager.Start(); //Bejelentkezés
+            AllStudents = new ObservableCollection<Student>(await KvarManager.GetAllStudents(AllLessons));//Tanulók összegyűjtése
+            AllLessons = new ObservableCollection<Lesson>(await KvarManager.GetAllLessons(AllStudents)); //Órák összegyűjtése
         }
         
         #endregion
