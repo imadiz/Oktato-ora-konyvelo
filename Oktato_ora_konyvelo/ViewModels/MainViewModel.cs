@@ -65,8 +65,8 @@ namespace Oktato_ora_konyvelo.ViewModels
         public async void LoginToKvar() //KVAR bejelentkezés command
         {
             KvarManager.Start(); //Bejelentkezés
-            AllStudents = new ObservableCollection<Student>(await KvarManager.GetAllStudents(AllLessons));//Tanulók összegyűjtése
-            AllLessons = new ObservableCollection<Lesson>(await KvarManager.GetAllLessons(AllStudents)); //Órák összegyűjtése
+            AllStudents = new ObservableCollection<Student>(await Task.Run(() => KvarManager.GetAllStudents(AllLessons))); //Tanulók összegyűjtése
+            AllLessons = new ObservableCollection<Lesson>(await Task.Run(() => KvarManager.GetAllLessons(AllStudents))); //Órák összegyűjtése
         }
         
         #endregion
@@ -123,7 +123,7 @@ namespace Oktato_ora_konyvelo.ViewModels
             
             TempLesson = new ToBeAddedLesson(AllLessons);//Proxy óra az órarögzítéshez
 
-            AddTestData();//Tesztadatok hozzáadása
+            //AddTestData();//Tesztadatok hozzáadása
         }
     }
 }

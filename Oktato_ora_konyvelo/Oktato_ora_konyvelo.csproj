@@ -22,7 +22,9 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" />
         <PackageReference Include="Selenium.Support" />
         <PackageReference Include="Selenium.WebDriver" />
+        <PackageReference Include="SeleniumExtras.WaitHelpers" />
     </ItemGroup>
 </Project>
